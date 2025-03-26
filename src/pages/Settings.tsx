@@ -1,11 +1,38 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Transition from "@/components/animations/Transition";
 import FadeIn from "@/components/animations/FadeIn";
 import { User, Bell, Moon, Shield, LogOut } from "lucide-react";
 import Button from "@/components/common/Button";
 import { toast } from "sonner";
+
+// Import UI components
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
 
 const SettingsOption: React.FC<{
   icon: React.ReactNode;
@@ -34,6 +61,7 @@ const SettingsOption: React.FC<{
 
 const Settings = () => {
   const navigate = useNavigate();
+  const [theme, setTheme] = useState<"light" | "dark" | "custom">("light");
 
   const handleLogout = () => {
     toast.success("Logged out successfully");
@@ -57,6 +85,7 @@ const Settings = () => {
         </header>
 
         <div className="space-y-4">
+          {/* Profile Settings */}
           <SettingsOption
             icon={<User className="h-5 w-5 text-taskify-blue" />}
             title="Profile Settings"
@@ -65,14 +94,70 @@ const Settings = () => {
             delay={100}
           />
 
-          <SettingsOption
-            icon={<Moon className="h-5 w-5 text-taskify-violet" />}
-            title="Theme Preferences"
-            description="Customize app appearance"
-            onClick={() => showComingSoon("Theme preferences")}
-            delay={200}
-          />
+          {/* Theme Preferences */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <div>
+                <SettingsOption
+                  icon={<Moon className="h-5 w-5 text-taskify-violet" />}
+                  title="Theme Preferences"
+                  description="Customize app appearance"
+                  onClick={() => {}}
+                  delay={200}
+                />
+              </div>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Theme Preferences</DialogTitle>
+                <DialogDescription>
+                  Choose your preferred theme for the application.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="py-4">
+                <RadioGroup value={theme} onValueChange={(value: "light" | "dark" | "custom") => setTheme(value)}>
+                  <div className="flex items-start space-x-2 space-y-0 mb-4">
+                    <RadioGroupItem value="light" id="light" />
+                    <Label htmlFor="light" className="font-normal cursor-pointer">
+                      <div className="font-medium mb-1">Light Mode</div>
+                      <p className="text-sm text-muted-foreground">
+                        A clean, light theme that's easy on the eyes during the day.
+                      </p>
+                    </Label>
+                  </div>
+                  <div className="flex items-start space-x-2 space-y-0 mb-4">
+                    <RadioGroupItem value="dark" id="dark" />
+                    <Label htmlFor="dark" className="font-normal cursor-pointer">
+                      <div className="font-medium mb-1">Dark Mode</div>
+                      <p className="text-sm text-muted-foreground">
+                        A darker theme that's perfect for late-night productivity.
+                      </p>
+                    </Label>
+                  </div>
+                  <div className="flex items-start space-x-2 space-y-0">
+                    <RadioGroupItem value="custom" id="custom" />
+                    <Label htmlFor="custom" className="font-normal cursor-pointer">
+                      <div className="font-medium mb-1">Custom Theme</div>
+                      <p className="text-sm text-muted-foreground">
+                        Customize colors and appearance to your preference.
+                      </p>
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </div>
+              <DialogFooter>
+                <Button
+                  onClick={() => {
+                    toast.success(`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme applied!`);
+                  }}
+                >
+                  Save Changes
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
+          {/* Notification Settings */}
           <SettingsOption
             icon={<Bell className="h-5 w-5 text-orange-500" />}
             title="Notification Settings"
@@ -81,6 +166,7 @@ const Settings = () => {
             delay={300}
           />
 
+          {/* Privacy Policy */}
           <SettingsOption
             icon={<Shield className="h-5 w-5 text-green-500" />}
             title="Privacy Policy"
@@ -90,16 +176,37 @@ const Settings = () => {
           />
         </div>
 
+        {/* Logout Button with Confirmation */}
         <FadeIn delay={500} direction="up" className="mt-8">
-          <Button
-            variant="outline"
-            size="lg"
-            className="w-full border-red-300 text-red-500 hover:bg-red-50"
-            icon={<LogOut className="h-5 w-5" />}
-            onClick={handleLogout}
-          >
-            Logout
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                size="lg"
+                className="w-full border-red-300 text-red-500 hover:bg-red-50"
+                icon={<LogOut className="h-5 w-5" />}
+              >
+                Logout
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  You will need to sign in again to access your tasks and projects.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  className="bg-red-500 text-white hover:bg-red-600"
+                  onClick={handleLogout}
+                >
+                  Yes, logout
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </FadeIn>
       </div>
     </Transition>
