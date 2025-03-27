@@ -32,14 +32,16 @@ const PrivacySettings: React.FC = () => {
           <div className="flex items-center mb-6">
             <button
               onClick={() => navigate("/settings")}
-              className="mr-4 p-2 rounded-full hover:bg-gray-100"
+              className="flex items-center justify-center w-10 h-10 mr-4 rounded-full bg-white shadow-sm hover:bg-gray-100 transition-colors"
+              aria-label="Back to settings"
             >
-              <ArrowLeft className="h-5 w-5 text-taskify-darkgrey" />
+              <ArrowLeft className="h-6 w-6 text-taskify-darkgrey font-bold" strokeWidth={2.5} />
             </button>
             <h2 className="text-xl font-bold text-taskify-darkgrey">Privacy Settings</h2>
           </div>
         </FadeIn>
 
+        {/* Privacy Options */}
         <div className="space-y-4">
           {/* Privacy Options */}
           <FadeIn delay={100}>
