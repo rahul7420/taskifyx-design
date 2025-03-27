@@ -6,6 +6,8 @@ import FadeIn from "@/components/animations/FadeIn";
 import { User, Bell, Moon, Shield, LogOut } from "lucide-react";
 import Button from "@/components/common/Button";
 import { toast } from "sonner";
+import ProfileOverviewPopup from "@/components/profile/ProfileOverviewPopup";
+import ProfileSettings from "@/components/profile/ProfileSettings";
 
 // Import UI components
 import {
@@ -62,6 +64,8 @@ const SettingsOption: React.FC<{
 const Settings = () => {
   const navigate = useNavigate();
   const [theme, setTheme] = useState<"light" | "dark" | "custom">("light");
+  const [showProfileOverview, setShowProfileOverview] = useState(false);
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
 
   const handleLogout = () => {
     toast.success("Logged out successfully");
@@ -71,6 +75,10 @@ const Settings = () => {
   const showComingSoon = (feature: string) => {
     toast.info(`${feature} will be available soon!`);
   };
+
+  if (showProfileSettings) {
+    return <ProfileSettings />;
+  }
 
   return (
     <Transition className="min-h-screen pb-20 pt-8">
@@ -90,7 +98,7 @@ const Settings = () => {
             icon={<User className="h-5 w-5 text-taskify-blue" />}
             title="Profile Settings"
             description="Manage your profile information"
-            onClick={() => showComingSoon("Profile settings")}
+            onClick={() => setShowProfileSettings(true)}
             delay={100}
           />
 
@@ -209,6 +217,12 @@ const Settings = () => {
           </AlertDialog>
         </FadeIn>
       </div>
+
+      {/* Profile Overview Popup */}
+      <ProfileOverviewPopup 
+        open={showProfileOverview} 
+        onOpenChange={setShowProfileOverview} 
+      />
     </Transition>
   );
 };
