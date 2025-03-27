@@ -4,10 +4,15 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button";
 import { ArrowRight } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
+import LoadingScreen from "@/components/auth/LoadingScreen";
+import AuthErrorPopup from "@/components/auth/AuthErrorPopup";
+import { toast } from "sonner";
 
 const Index = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [signingIn, setSigningIn] = useState(false);
+  const [showError, setShowError] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -20,6 +25,35 @@ const Index = () => {
   const handleGetStarted = () => {
     navigate("/dashboard");
   };
+
+  const handleGoogleSignIn = () => {
+    setSigningIn(true);
+    
+    // Simulate Google sign-in process
+    setTimeout(() => {
+      // For demonstration purposes, simulate a successful login 75% of the time
+      const success = Math.random() > 0.25;
+      
+      if (success) {
+        // Simulate storing user data
+        localStorage.setItem("user", JSON.stringify({
+          name: "Alex Johnson",
+          email: "alex.johnson@example.com",
+          profilePicture: "https://ui-avatars.com/api/?name=Alex+Johnson&background=random"
+        }));
+        
+        toast.success("Successfully signed in!");
+        navigate("/dashboard");
+      } else {
+        setSigningIn(false);
+        setShowError(true);
+      }
+    }, 2000);
+  };
+
+  if (signingIn) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center overflow-hidden">
@@ -72,7 +106,7 @@ const Index = () => {
                 variant="google" 
                 size="lg" 
                 className="w-64"
-                onClick={handleGetStarted}
+                onClick={handleGoogleSignIn}
                 icon={
                   <svg viewBox="0 0 24 24" width="20" height="20">
                     <path
@@ -111,6 +145,12 @@ const Index = () => {
           </FadeIn>
         </div>
       )}
+      
+      <AuthErrorPopup 
+        open={showError} 
+        onOpenChange={setShowError} 
+        onTryAgain={handleGoogleSignIn} 
+      />
     </div>
   );
 };

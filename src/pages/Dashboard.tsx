@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Card from "@/components/common/Card";
 import { useTaskContext } from "@/context/TaskContext";
 import { Calendar, List, CheckCheck, Clock } from "lucide-react";
@@ -7,16 +7,34 @@ import Transition from "@/components/animations/Transition";
 import Button from "@/components/common/Button";
 import { useNavigate } from "react-router-dom";
 import FadeIn from "@/components/animations/FadeIn";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ProfileOverviewPopup from "@/components/profile/ProfileOverviewPopup";
+
+interface UserData {
+  name: string;
+  email: string;
+  profilePicture: string;
+}
 
 const Dashboard = () => {
   const { getTasksByStatus, getUpcomingTasks } = useTaskContext();
   const navigate = useNavigate();
+  const [user, setUser] = useState<UserData | null>(null);
+  const [showProfilePopup, setShowProfilePopup] = useState(false);
   
   const todoTasks = getTasksByStatus("todo");
   const inProgressTasks = getTasksByStatus("inprogress");
   const completedTasks = getTasksByStatus("completed");
   const upcomingTasks = getUpcomingTasks(7); // Tasks due in the next 7 days
   
+  useEffect(() => {
+    // Get user data from localStorage
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
   const getCurrentDate = () => {
     const options: Intl.DateTimeFormatOptions = { 
       weekday: 'long', 
@@ -39,13 +57,20 @@ const Dashboard = () => {
           </FadeIn>
           
           <FadeIn direction="down">
-            <div className="h-10 w-10 overflow-hidden rounded-full bg-taskify-violet/10">
-              <img
-                src="https://ui-avatars.com/api/?name=User&background=random"
-                alt="User"
-                className="h-full w-full object-cover"
-              />
-            </div>
+            <button 
+              className="flex items-center gap-2"
+              onClick={() => setShowProfilePopup(true)}
+            >
+              {user?.name && (
+                <span className="text-sm font-medium text-taskify-darkgrey hidden sm:inline-block">
+                  {user.name.split(' ')[0]}
+                </span>
+              )}
+              <Avatar className="h-10 w-10 cursor-pointer border border-white shadow-sm">
+                <AvatarImage src={user?.profilePicture || "https://ui-avatars.com/api/?name=User&background=random"} />
+                <AvatarFallback>U</AvatarFallback>
+              </Avatar>
+            </button>
           </FadeIn>
         </header>
 
@@ -172,6 +197,11 @@ const Dashboard = () => {
           </Button>
         </FadeIn>
       </div>
+      
+      <ProfileOverviewPopup 
+        open={showProfilePopup} 
+        onOpenChange={setShowProfilePopup} 
+      />
     </Transition>
   );
 };
