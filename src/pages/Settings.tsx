@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import ProfileOverviewPopup from "@/components/profile/ProfileOverviewPopup";
 import ProfileSettings from "@/components/profile/ProfileSettings";
 import NotificationSettings from "@/components/notifications/NotificationSettings";
+import PrivacySettings from "@/components/privacy/PrivacySettings";
 
 // Import UI components
 import {
@@ -68,6 +69,7 @@ const Settings = () => {
   const [showProfileOverview, setShowProfileOverview] = useState(false);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
   const [showNotificationSettings, setShowNotificationSettings] = useState(false);
+  const [showPrivacySettings, setShowPrivacySettings] = useState(false);
 
   const handleLogout = () => {
     toast.success("Logged out successfully");
@@ -84,6 +86,10 @@ const Settings = () => {
 
   if (showNotificationSettings) {
     return <NotificationSettings />;
+  }
+
+  if (showPrivacySettings) {
+    return <PrivacySettings />;
   }
 
   return (
@@ -180,12 +186,12 @@ const Settings = () => {
             delay={300}
           />
 
-          {/* Privacy Policy */}
+          {/* Privacy Policy - Updated to use the new PrivacySettings component */}
           <SettingsOption
             icon={<Shield className="h-5 w-5 text-green-500" />}
-            title="Privacy Policy"
-            description="Read our privacy policy"
-            onClick={() => showComingSoon("Privacy policy")}
+            title="Privacy Settings"
+            description="Manage your privacy and data"
+            onClick={() => setShowPrivacySettings(true)}
             delay={400}
           />
         </div>
