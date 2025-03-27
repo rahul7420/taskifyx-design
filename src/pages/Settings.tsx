@@ -8,6 +8,7 @@ import Button from "@/components/common/Button";
 import { toast } from "sonner";
 import ProfileOverviewPopup from "@/components/profile/ProfileOverviewPopup";
 import ProfileSettings from "@/components/profile/ProfileSettings";
+import NotificationSettings from "@/components/notifications/NotificationSettings";
 
 // Import UI components
 import {
@@ -66,6 +67,7 @@ const Settings = () => {
   const [theme, setTheme] = useState<"light" | "dark" | "custom">("light");
   const [showProfileOverview, setShowProfileOverview] = useState(false);
   const [showProfileSettings, setShowProfileSettings] = useState(false);
+  const [showNotificationSettings, setShowNotificationSettings] = useState(false);
 
   const handleLogout = () => {
     toast.success("Logged out successfully");
@@ -78,6 +80,10 @@ const Settings = () => {
 
   if (showProfileSettings) {
     return <ProfileSettings />;
+  }
+
+  if (showNotificationSettings) {
+    return <NotificationSettings />;
   }
 
   return (
@@ -170,7 +176,7 @@ const Settings = () => {
             icon={<Bell className="h-5 w-5 text-orange-500" />}
             title="Notification Settings"
             description="Manage your notifications"
-            onClick={() => showComingSoon("Notification settings")}
+            onClick={() => setShowNotificationSettings(true)}
             delay={300}
           />
 
