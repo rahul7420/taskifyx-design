@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -24,6 +23,11 @@ const NotificationSettings: React.FC = () => {
   const [silentMode, setSilentMode] = useState(false);
   const [frequency, setFrequency] = useState("daily");
 
+  const handleBackNavigation = () => {
+    navigate("/settings");
+    console.log("Navigating back to settings page");
+  };
+
   const handleSave = () => {
     toast.success("Notification settings saved successfully!");
     navigate("/settings");
@@ -39,17 +43,17 @@ const NotificationSettings: React.FC = () => {
         <FadeIn direction="down">
           <div className="flex items-center mb-6">
             <button
-              onClick={() => navigate("/settings")}
-              className="mr-4 p-2 rounded-full hover:bg-gray-100"
+              onClick={handleBackNavigation}
+              className="flex items-center justify-center w-10 h-10 mr-4 rounded-full bg-white shadow-sm hover:bg-gray-100 transition-colors"
+              aria-label="Back to settings"
             >
-              <ArrowLeft className="h-5 w-5 text-taskify-darkgrey" />
+              <ArrowLeft className="h-6 w-6 text-taskify-darkgrey font-bold" strokeWidth={2.5} />
             </button>
             <h2 className="text-xl font-bold text-taskify-darkgrey">Notification Settings</h2>
           </div>
         </FadeIn>
 
         <div className="space-y-4">
-          {/* Notification Toggles */}
           <FadeIn delay={100}>
             <Card>
               <CardContent className="p-6 space-y-4">
@@ -112,7 +116,6 @@ const NotificationSettings: React.FC = () => {
             </Card>
           </FadeIn>
 
-          {/* Sound & Vibration Settings */}
           <FadeIn delay={200}>
             <Card>
               <CardContent className="p-6">
@@ -137,7 +140,6 @@ const NotificationSettings: React.FC = () => {
             </Card>
           </FadeIn>
 
-          {/* Notification Frequency */}
           <FadeIn delay={300}>
             <Card>
               <CardContent className="p-6">
@@ -172,7 +174,6 @@ const NotificationSettings: React.FC = () => {
             </Card>
           </FadeIn>
 
-          {/* Silent Mode */}
           <FadeIn delay={400}>
             <Card>
               <CardContent className="p-6">
@@ -197,7 +198,6 @@ const NotificationSettings: React.FC = () => {
             </Card>
           </FadeIn>
 
-          {/* Save Button */}
           <FadeIn delay={500} direction="up" className="mt-8">
             <Button
               onClick={handleSave}

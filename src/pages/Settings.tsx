@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Transition from "@/components/animations/Transition";
@@ -7,9 +6,6 @@ import { User, Bell, Moon, Shield, LogOut } from "lucide-react";
 import Button from "@/components/common/Button";
 import { toast } from "sonner";
 import ProfileOverviewPopup from "@/components/profile/ProfileOverviewPopup";
-import ProfileSettings from "@/components/profile/ProfileSettings";
-import NotificationSettings from "@/components/notifications/NotificationSettings";
-import PrivacySettings from "@/components/privacy/PrivacySettings";
 
 // Import UI components
 import {
@@ -67,9 +63,6 @@ const Settings = () => {
   const navigate = useNavigate();
   const [theme, setTheme] = useState<"light" | "dark" | "custom">("light");
   const [showProfileOverview, setShowProfileOverview] = useState(false);
-  const [showProfileSettings, setShowProfileSettings] = useState(false);
-  const [showNotificationSettings, setShowNotificationSettings] = useState(false);
-  const [showPrivacySettings, setShowPrivacySettings] = useState(false);
 
   const handleLogout = () => {
     toast.success("Logged out successfully");
@@ -79,18 +72,6 @@ const Settings = () => {
   const showComingSoon = (feature: string) => {
     toast.info(`${feature} will be available soon!`);
   };
-
-  if (showProfileSettings) {
-    return <ProfileSettings />;
-  }
-
-  if (showNotificationSettings) {
-    return <NotificationSettings />;
-  }
-
-  if (showPrivacySettings) {
-    return <PrivacySettings />;
-  }
 
   return (
     <Transition className="min-h-screen pb-20 pt-8">
@@ -110,7 +91,7 @@ const Settings = () => {
             icon={<User className="h-5 w-5 text-taskify-blue" />}
             title="Profile Settings"
             description="Manage your profile information"
-            onClick={() => setShowProfileSettings(true)}
+            onClick={() => navigate("/settings/profile")}
             delay={100}
           />
 
@@ -182,16 +163,16 @@ const Settings = () => {
             icon={<Bell className="h-5 w-5 text-orange-500" />}
             title="Notification Settings"
             description="Manage your notifications"
-            onClick={() => setShowNotificationSettings(true)}
+            onClick={() => navigate("/settings/notifications")}
             delay={300}
           />
 
-          {/* Privacy Policy - Updated to use the new PrivacySettings component */}
+          {/* Privacy Policy - Updated to use the new route */}
           <SettingsOption
             icon={<Shield className="h-5 w-5 text-green-500" />}
             title="Privacy Settings"
             description="Manage your privacy and data"
-            onClick={() => setShowPrivacySettings(true)}
+            onClick={() => navigate("/settings/privacy")}
             delay={400}
           />
         </div>

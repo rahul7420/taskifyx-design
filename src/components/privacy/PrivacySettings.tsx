@@ -20,6 +20,12 @@ const PrivacySettings: React.FC = () => {
   const [shareTaskActivity, setShareTaskActivity] = useState(false);
   const [allowDataCollection, setAllowDataCollection] = useState(true);
   
+  const handleBackNavigation = () => {
+    // Navigate back to the main settings page
+    navigate("/settings");
+    console.log("Navigating back to settings page");
+  };
+
   const handleSave = () => {
     toast.success("Privacy settings saved successfully!");
     navigate("/settings");
@@ -31,7 +37,7 @@ const PrivacySettings: React.FC = () => {
         <FadeIn direction="down">
           <div className="flex items-center mb-6">
             <button
-              onClick={() => navigate("/settings")}
+              onClick={handleBackNavigation}
               className="flex items-center justify-center w-10 h-10 mr-4 rounded-full bg-white shadow-sm hover:bg-gray-100 transition-colors"
               aria-label="Back to settings"
             >

@@ -15,6 +15,9 @@ import Tasks from "./pages/Tasks";
 import AddTask from "./pages/AddTask";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import PrivacySettings from "./components/privacy/PrivacySettings";
+import NotificationSettings from "./components/notifications/NotificationSettings";
+import ProfileSettings from "./components/profile/ProfileSettings";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +35,9 @@ const App = () => (
               <Route path="/tasks" element={<Tasks />} />
               <Route path="/add-task" element={<AddTask />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/settings/privacy" element={<PrivacySettings />} />
+              <Route path="/settings/notifications" element={<NotificationSettings />} />
+              <Route path="/settings/profile" element={<ProfileSettings />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AnimatePresence>

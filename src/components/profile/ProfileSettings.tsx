@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -15,8 +14,14 @@ const ProfileSettings: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [privacyExpanded, setPrivacyExpanded] = useState(false);
 
+  const handleBackNavigation = () => {
+    navigate("/settings");
+    console.log("Navigating back to settings page");
+  };
+
   const handleSave = () => {
     toast.success("Profile updated successfully!");
+    navigate("/settings");
   };
 
   const handleEditEmail = () => {
@@ -32,10 +37,11 @@ const ProfileSettings: React.FC = () => {
       <FadeIn direction="down">
         <div className="flex items-center mb-6">
           <button
-            onClick={() => navigate("/settings")}
-            className="mr-4 p-2 rounded-full hover:bg-gray-100"
+            onClick={handleBackNavigation}
+            className="flex items-center justify-center w-10 h-10 mr-4 rounded-full bg-white shadow-sm hover:bg-gray-100 transition-colors"
+            aria-label="Back to settings"
           >
-            <ArrowLeft className="h-5 w-5 text-taskify-darkgrey" />
+            <ArrowLeft className="h-6 w-6 text-taskify-darkgrey font-bold" strokeWidth={2.5} />
           </button>
           <h2 className="text-xl font-bold text-taskify-darkgrey">Profile Settings</h2>
         </div>
