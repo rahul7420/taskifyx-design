@@ -7,7 +7,7 @@ interface TransitionProps {
   className?: string;
 }
 
-// Page transition animations
+// Enhanced page transition animations with medium smoothness
 const variants = {
   initial: {
     opacity: 0,
@@ -17,16 +17,16 @@ const variants = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.3,
-      ease: [0.22, 1, 0.36, 1],
+      duration: 0.4, // Medium transition duration (slightly longer)
+      ease: [0.25, 0.1, 0.25, 1], // Cubic bezier for smoother motion
     },
   },
   exit: {
     opacity: 0,
     y: 20,
     transition: {
-      duration: 0.2,
-      ease: [0.22, 1, 0.36, 1],
+      duration: 0.3, // Slightly faster exit
+      ease: [0.25, 0.1, 0.25, 1],
     },
   },
 };

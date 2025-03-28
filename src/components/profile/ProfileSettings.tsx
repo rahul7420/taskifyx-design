@@ -1,18 +1,34 @@
+
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Edit, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Edit, ChevronDown, ChevronUp, Save, X } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
 
 const ProfileSettings: React.FC = () => {
   const navigate = useNavigate();
   const [fullName, setFullName] = useState("Alex Johnson");
+  const [email, setEmail] = useState("alex.johnson@example.com");
+  const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [privacyExpanded, setPrivacyExpanded] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleBackNavigation = () => {
     navigate("/settings");
@@ -25,11 +41,37 @@ const ProfileSettings: React.FC = () => {
   };
 
   const handleEditEmail = () => {
-    toast.info("Email editing coming soon!");
+    if (isEditingEmail) {
+      // Save email logic would go here
+      toast.success("Email updated successfully!");
+      setIsEditingEmail(false);
+    } else {
+      setIsEditingEmail(true);
+    }
   };
 
-  const handleChangePassword = () => {
-    toast.info("Password change feature coming soon!");
+  const handleCancelEmailEdit = () => {
+    setEmail("alex.johnson@example.com"); // Reset to original
+    setIsEditingEmail(false);
+  };
+
+  const handlePasswordChange = () => {
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords don't match!");
+      return;
+    }
+    
+    if (currentPassword.length < 6 || newPassword.length < 6) {
+      toast.error("Passwords must be at least 6 characters!");
+      return;
+    }
+    
+    // Password change logic would go here
+    toast.success("Password changed successfully!");
+    setIsChangePasswordOpen(false);
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
   };
 
   return (
@@ -85,21 +127,40 @@ const ProfileSettings: React.FC = () => {
               </label>
               <div className="flex items-center">
                 <Input
-                  value="alex.johnson@example.com"
-                  readOnly
-                  className="w-full bg-gray-50"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`w-full ${isEditingEmail ? 'bg-white' : 'bg-gray-50'}`}
+                  placeholder="Enter your email"
+                  readOnly={!isEditingEmail}
                 />
-                <button
-                  onClick={handleEditEmail}
-                  className="ml-2 p-2 text-taskify-blue hover:bg-blue-50 rounded"
-                >
-                  <Edit className="h-4 w-4" />
-                </button>
+                {isEditingEmail ? (
+                  <div className="flex ml-2">
+                    <button
+                      onClick={handleEditEmail}
+                      className="p-2 text-green-600 hover:bg-green-50 rounded mr-1"
+                    >
+                      <Save className="h-4 w-4" />
+                    </button>
+                    <button
+                      onClick={handleCancelEmailEdit}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleEditEmail}
+                    className="ml-2 p-2 text-taskify-blue hover:bg-blue-50 rounded"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                )}
               </div>
             </div>
 
             <Button
-              onClick={handleChangePassword}
+              onClick={() => setIsChangePasswordOpen(true)}
               variant="outline"
               className="w-full"
             >
@@ -182,6 +243,55 @@ const ProfileSettings: React.FC = () => {
           </Button>
         </div>
       </FadeIn>
+
+      {/* Change Password Dialog */}
+      <Dialog open={isChangePasswordOpen} onOpenChange={setIsChangePasswordOpen}>
+        <DialogContent className="sm:max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+            <DialogDescription>
+              Enter your current password and a new password below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="current-password">Current Password</Label>
+              <Input 
+                id="current-password" 
+                type="password" 
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input 
+                id="new-password" 
+                type="password" 
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="confirm-password">Confirm New Password</Label>
+              <Input 
+                id="confirm-password" 
+                type="password" 
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsChangePasswordOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handlePasswordChange}>
+              Change Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

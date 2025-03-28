@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { TaskProvider } from "./context/TaskContext";
 import Navbar from "./components/layout/Navbar";
 import { AnimatePresence } from "framer-motion";
@@ -21,6 +21,27 @@ import ProfileSettings from "./components/profile/ProfileSettings";
 
 const queryClient = new QueryClient();
 
+// AnimationLayout component to handle route transitions
+const AnimationLayout = () => {
+  const location = useLocation();
+  
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <Routes location={location} key={location.pathname}>
+        <Route path="/" element={<Index />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/tasks" element={<Tasks />} />
+        <Route path="/add-task" element={<AddTask />} />
+        <Route path="/settings" element={<Settings />} />
+        <Route path="/settings/privacy" element={<PrivacySettings />} />
+        <Route path="/settings/notifications" element={<NotificationSettings />} />
+        <Route path="/settings/profile" element={<ProfileSettings />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AnimatePresence>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TaskProvider>
@@ -28,19 +49,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/tasks" element={<Tasks />} />
-              <Route path="/add-task" element={<AddTask />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/settings/privacy" element={<PrivacySettings />} />
-              <Route path="/settings/notifications" element={<NotificationSettings />} />
-              <Route path="/settings/profile" element={<ProfileSettings />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AnimatePresence>
+          <AnimationLayout />
           <Navbar />
         </BrowserRouter>
       </TooltipProvider>

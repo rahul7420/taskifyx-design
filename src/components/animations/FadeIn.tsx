@@ -16,7 +16,7 @@ const FadeIn: React.FC<FadeInProps> = ({
   children,
   className = "",
   delay = 0,
-  duration = 500,
+  duration = 600, // Increased duration for smoother transitions
   direction = "up",
   threshold = 0.1,
   once = true,
@@ -81,6 +81,7 @@ const FadeIn: React.FC<FadeInProps> = ({
       style={{
         animationDelay: `${delay}ms`,
         animationDuration: `${duration}ms`,
+        animationTimingFunction: "cubic-bezier(0.25, 0.1, 0.25, 1)", // Smoother easing
       }}
     >
       {children}
