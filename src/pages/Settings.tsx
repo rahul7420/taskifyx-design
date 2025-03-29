@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Transition from "@/components/animations/Transition";
@@ -17,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import SettingsOption from "@/components/settings/SettingsOption";
 
 const Settings = () => {
   const navigate = useNavigate();
