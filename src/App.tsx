@@ -7,6 +7,8 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { TaskProvider } from "./context/TaskContext";
 import Navbar from "./components/layout/Navbar";
 import { AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import SplashScreen from "./components/splash/SplashScreen";
 
 // Pages
 import Index from "./pages/Index";
@@ -24,6 +26,20 @@ const queryClient = new QueryClient();
 // AnimationLayout component to handle route transitions
 const AnimationLayout = () => {
   const location = useLocation();
+  const [showSplash, setShowSplash] = useState(true);
+  
+  useEffect(() => {
+    // Hide splash screen after 3.5 seconds
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 3500);
+    
+    return () => clearTimeout(timer);
+  }, []);
+  
+  if (showSplash) {
+    return <SplashScreen />;
+  }
   
   return (
     <AnimatePresence mode="wait" initial={false}>
