@@ -1,9 +1,7 @@
-
 import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Slider } from "@/components/ui/slider";
 import { ArrowLeft, Bell, Volume2, ChevronRight, Clock } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
 import { toast } from "sonner";
@@ -24,12 +22,6 @@ const NotificationSettings: React.FC = () => {
   const [generalNotifications, setGeneralNotifications] = useState(true);
   const [silentMode, setSilentMode] = useState(false);
   const [frequency, setFrequency] = useState("daily");
-  
-  // Sound & Vibration states
-  const [notificationSound, setNotificationSound] = useState(true);
-  const [vibrationAlert, setVibrationAlert] = useState(true);
-  const [soundType, setSoundType] = useState("default");
-  const [vibrationIntensity, setVibrationIntensity] = useState([50]);
 
   const handleBackNavigation = () => {
     navigate("/settings");
@@ -39,6 +31,10 @@ const NotificationSettings: React.FC = () => {
   const handleSave = () => {
     toast.success("Notification settings saved successfully!");
     navigate("/settings");
+  };
+
+  const handleSoundSettings = () => {
+    toast.info("Sound & Vibration settings coming soon!");
   };
 
   return (
@@ -120,103 +116,26 @@ const NotificationSettings: React.FC = () => {
             </Card>
           </FadeIn>
 
-          {/* Sound & Vibration Section */}
           <FadeIn delay={200}>
             <Card>
-              <CardContent className="p-6 space-y-4">
-                <div className="flex items-center">
-                  <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/10">
-                    <Volume2 className="h-5 w-5 text-orange-500" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-taskify-darkgrey">Sound & Vibration</h3>
-                    <p className="text-sm text-taskify-darkgrey/60">
-                      Customize notification sounds and vibration settings
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="space-y-4 mt-3 pl-14">
-                  {/* Notification Sound Toggle */}
-                  <div className="flex items-center justify-between">
+              <CardContent className="p-6">
+                <button
+                  onClick={handleSoundSettings}
+                  className="w-full flex items-center justify-between"
+                >
+                  <div className="flex items-center">
+                    <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-orange-500/10">
+                      <Volume2 className="h-5 w-5 text-orange-500" />
+                    </div>
                     <div>
-                      <p className="font-medium text-taskify-darkgrey">Notification Sound</p>
+                      <p className="font-medium text-taskify-darkgrey">Sound & Vibration</p>
                       <p className="text-sm text-taskify-darkgrey/60">
-                        Play sound for notifications
+                        Customize notification sounds and vibration
                       </p>
                     </div>
-                    <Switch 
-                      checked={notificationSound}
-                      onCheckedChange={setNotificationSound}
-                    />
                   </div>
-                  
-                  {/* Sound Selection Dropdown - Conditional */}
-                  {notificationSound && (
-                    <div className="ml-4 pb-2">
-                      <p className="text-sm text-taskify-darkgrey mb-2">Select sound</p>
-                      <Select value={soundType} onValueChange={setSoundType}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select sound type" />
-                        </SelectTrigger>
-                        <SelectContent className="bg-white">
-                          <SelectItem value="default">Default Sound</SelectItem>
-                          <SelectItem value="beep">Beep</SelectItem>
-                          <SelectItem value="chime">Chime</SelectItem>
-                          <SelectItem value="custom">Custom Sound</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      {soundType === "custom" && (
-                        <div className="mt-3">
-                          <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="w-full text-sm"
-                            onClick={() => toast.info("File upload feature coming soon")}
-                          >
-                            Upload Sound File
-                          </Button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                  
-                  {/* Vibration Toggle */}
-                  <div className="flex items-center justify-between pt-2">
-                    <div>
-                      <p className="font-medium text-taskify-darkgrey">Vibration Alert</p>
-                      <p className="text-sm text-taskify-darkgrey/60">
-                        Vibrate device when notifications arrive
-                      </p>
-                    </div>
-                    <Switch 
-                      checked={vibrationAlert}
-                      onCheckedChange={setVibrationAlert}
-                    />
-                  </div>
-                  
-                  {/* Vibration Intensity Slider - Conditional */}
-                  {vibrationAlert && (
-                    <div className="ml-4 pb-2">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm text-taskify-darkgrey">Intensity</p>
-                        <p className="text-xs text-taskify-darkgrey/70">{vibrationIntensity[0]}%</p>
-                      </div>
-                      <Slider
-                        value={vibrationIntensity}
-                        onValueChange={setVibrationIntensity}
-                        max={100}
-                        step={1}
-                        className="bg-transparent"
-                      />
-                      <div className="flex justify-between mt-1">
-                        <span className="text-xs text-taskify-darkgrey/60">Low</span>
-                        <span className="text-xs text-taskify-darkgrey/60">High</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  <ChevronRight className="h-5 w-5 text-taskify-darkgrey/40" />
+                </button>
               </CardContent>
             </Card>
           </FadeIn>
