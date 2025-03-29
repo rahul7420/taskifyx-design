@@ -59,7 +59,7 @@ const SplashScreen: React.FC = () => {
 
         <FadeIn delay={900} duration={800}>
           <p className="text-[#E0E0E0] text-base font-medium font-poppins">
-            Manage tasks efficiently
+            Your Agile Project Manager
           </p>
         </FadeIn>
       </div>

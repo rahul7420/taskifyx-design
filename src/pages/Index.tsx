@@ -172,7 +172,7 @@ const Index = () => {
               className="text-sm text-gray-500 hover:text-gray-900 w-full"
               onClick={handleGetStarted}
             >
-{/*               Continue without signing in */}
+              Continue without signing in
             </Button>
           </CardFooter>
         </Card>
