@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Shield, Lock, Eye } from "lucide-react";
+import { ArrowLeft, Shield, Lock } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -142,41 +142,8 @@ const PrivacySettings: React.FC = () => {
             </Card>
           </FadeIn>
 
-          {/* Data Access Options */}
-          <FadeIn delay={400}>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-taskify-blue/10">
-                    <Eye className="h-5 w-5 text-taskify-blue" />
-                  </div>
-                  <h3 className="font-medium text-taskify-darkgrey">Your Data</h3>
-                </div>
-                
-                <div className="pl-12 space-y-3">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full justify-start text-left"
-                    onClick={() => toast.info("Request data feature coming soon")}
-                  >
-                    Request a copy of your data
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full justify-start text-left text-red-500 border-red-200 hover:bg-red-50"
-                    onClick={() => toast.info("Delete account feature coming soon")}
-                  >
-                    Delete your account
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </FadeIn>
-
           {/* Save Button */}
-          <FadeIn delay={500} direction="up" className="mt-8">
+          <FadeIn delay={400} direction="up" className="mt-8">
             <Button
               onClick={handleSave}
               className="w-full"
