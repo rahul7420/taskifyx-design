@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Transition from "@/components/animations/Transition";
@@ -32,36 +33,13 @@ import {
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-
-const SettingsOption: React.FC<{
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  onClick: () => void;
-  delay?: number;
-}> = ({ icon, title, description, onClick, delay = 0 }) => (
-  <FadeIn delay={delay} direction="right">
-    <button
-      className="w-full rounded-xl bg-white p-4 text-left shadow-sm transition-all duration-200 hover:shadow-md dark:bg-taskify-darkgrey dark:text-white dark:hover:bg-taskify-darkgrey/80"
-      onClick={onClick}
-    >
-      <div className="flex items-center">
-        <div className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-taskify-blue/10 dark:bg-taskify-blue/20">
-          {icon}
-        </div>
-        <div>
-          <h3 className="font-medium text-taskify-darkgrey dark:text-white">{title}</h3>
-          <p className="text-sm text-taskify-darkgrey/60 dark:text-white/60">{description}</p>
-        </div>
-      </div>
-    </button>
-  </FadeIn>
-);
+import { useSettingsOption } from "@/hooks/useSettingsOption";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const [theme, setTheme] = useState<"light" | "dark" | "custom">("light");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [showProfileOverview, setShowProfileOverview] = useState(false);
+  const SettingsOption = useSettingsOption();
 
   // Apply theme on component mount and when theme changes
   useEffect(() => {
@@ -78,7 +56,7 @@ const Settings = () => {
 
   // Check for saved theme preference on component mount
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | "custom" | null;
+    const savedTheme = localStorage.getItem("theme") as "light" | "dark" | null;
     if (savedTheme) {
       setTheme(savedTheme);
     } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
@@ -97,9 +75,6 @@ const Settings = () => {
 
   const applyTheme = () => {
     toast.success(`${theme.charAt(0).toUpperCase() + theme.slice(1)} theme applied!`);
-    if (theme === "custom") {
-      showComingSoon("Custom theme");
-    }
   };
 
   return (
@@ -147,7 +122,7 @@ const Settings = () => {
               <div className="py-4">
                 <RadioGroup 
                   value={theme} 
-                  onValueChange={(value: "light" | "dark" | "custom") => setTheme(value)}
+                  onValueChange={(value: "light" | "dark") => setTheme(value)}
                 >
                   <div className="flex items-start space-x-2 space-y-0 mb-4">
                     <RadioGroupItem value="light" id="light" />
@@ -158,21 +133,12 @@ const Settings = () => {
                       </p>
                     </Label>
                   </div>
-                  <div className="flex items-start space-x-2 space-y-0 mb-4">
+                  <div className="flex items-start space-x-2 space-y-0">
                     <RadioGroupItem value="dark" id="dark" />
                     <Label htmlFor="dark" className="font-normal cursor-pointer dark:text-white">
                       <div className="font-medium mb-1">Dark Mode</div>
                       <p className="text-sm text-muted-foreground dark:text-white/60">
                         A darker theme that's perfect for late-night productivity.
-                      </p>
-                    </Label>
-                  </div>
-                  <div className="flex items-start space-x-2 space-y-0">
-                    <RadioGroupItem value="custom" id="custom" />
-                    <Label htmlFor="custom" className="font-normal cursor-pointer dark:text-white">
-                      <div className="font-medium mb-1">Custom Theme</div>
-                      <p className="text-sm text-muted-foreground dark:text-white/60">
-                        Customize colors and appearance to your preference.
                       </p>
                     </Label>
                   </div>

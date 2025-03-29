@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Shield, Lock, Eye } from "lucide-react";
+import { ArrowLeft, Shield, Lock } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
@@ -32,18 +32,18 @@ const PrivacySettings: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-taskify-lightgrey pb-20 pt-8">
+    <div className="min-h-screen bg-taskify-lightgrey pb-20 pt-8 dark:bg-taskify-darkgrey">
       <div className="mx-auto max-w-md px-4">
         <FadeIn direction="down">
           <div className="flex items-center mb-6">
             <button
               onClick={handleBackNavigation}
-              className="flex items-center justify-center w-10 h-10 mr-4 rounded-full bg-white shadow-sm hover:bg-gray-100 transition-colors"
+              className="flex items-center justify-center w-10 h-10 mr-4 rounded-full bg-white shadow-sm hover:bg-gray-100 transition-colors dark:bg-taskify-darkgrey/80 dark:hover:bg-taskify-darkgrey/60 dark:text-white"
               aria-label="Back to settings"
             >
-              <ArrowLeft className="h-6 w-6 text-taskify-darkgrey font-bold" strokeWidth={2.5} />
+              <ArrowLeft className="h-6 w-6 text-taskify-darkgrey font-bold dark:text-white" strokeWidth={2.5} />
             </button>
-            <h2 className="text-xl font-bold text-taskify-darkgrey">Privacy Settings</h2>
+            <h2 className="text-xl font-bold text-taskify-darkgrey dark:text-white">Privacy Settings</h2>
           </div>
         </FadeIn>
 
@@ -51,15 +51,15 @@ const PrivacySettings: React.FC = () => {
         <div className="space-y-4">
           {/* Privacy Options */}
           <FadeIn delay={100}>
-            <Card>
+            <Card className="dark:bg-taskify-darkgrey/80 dark:border-gray-700">
               <CardContent className="p-6 space-y-4">
-                <h3 className="font-medium text-taskify-darkgrey mb-2">Profile Privacy</h3>
+                <h3 className="font-medium text-taskify-darkgrey mb-2 dark:text-white">Profile Privacy</h3>
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-taskify-darkgrey">Show Profile to Others</p>
-                      <p className="text-sm text-taskify-darkgrey/60">
+                      <p className="font-medium text-taskify-darkgrey dark:text-white">Show Profile to Others</p>
+                      <p className="text-sm text-taskify-darkgrey/60 dark:text-white/60">
                         Allow other users to view your profile information
                       </p>
                     </div>
@@ -71,8 +71,8 @@ const PrivacySettings: React.FC = () => {
                   
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-taskify-darkgrey">Share Task Activity</p>
-                      <p className="text-sm text-taskify-darkgrey/60">
+                      <p className="font-medium text-taskify-darkgrey dark:text-white">Share Task Activity</p>
+                      <p className="text-sm text-taskify-darkgrey/60 dark:text-white/60">
                         Let others see your recent task activity
                       </p>
                     </div>
@@ -88,15 +88,15 @@ const PrivacySettings: React.FC = () => {
 
           {/* Data Collection */}
           <FadeIn delay={200}>
-            <Card>
+            <Card className="dark:bg-taskify-darkgrey/80 dark:border-gray-700">
               <CardContent className="p-6 space-y-4">
-                <h3 className="font-medium text-taskify-darkgrey mb-2">Data & Analytics</h3>
+                <h3 className="font-medium text-taskify-darkgrey mb-2 dark:text-white">Data & Analytics</h3>
                 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium text-taskify-darkgrey">Allow Data Collection</p>
-                      <p className="text-sm text-taskify-darkgrey/60">
+                      <p className="font-medium text-taskify-darkgrey dark:text-white">Allow Data Collection</p>
+                      <p className="text-sm text-taskify-darkgrey/60 dark:text-white/60">
                         Help us improve by allowing anonymous usage data
                       </p>
                     </div>
@@ -112,19 +112,19 @@ const PrivacySettings: React.FC = () => {
 
           {/* Detailed Privacy Policy */}
           <FadeIn delay={300}>
-            <Card>
+            <Card className="dark:bg-taskify-darkgrey/80 dark:border-gray-700">
               <CardContent className="p-6">
                 <Accordion type="single" collapsible className="w-full">
                   <AccordionItem value="privacy-policy">
-                    <AccordionTrigger className="text-taskify-darkgrey">
+                    <AccordionTrigger className="text-taskify-darkgrey dark:text-white">
                       <div className="flex items-center">
-                        <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-green-500/10">
+                        <div className="mr-3 flex h-8 w-8 items-center justify-center rounded-full bg-green-500/10 dark:bg-green-500/20">
                           <Lock className="h-4 w-4 text-green-500" />
                         </div>
                         <span>Privacy Policy</span>
                       </div>
                     </AccordionTrigger>
-                    <AccordionContent className="text-sm text-taskify-darkgrey/70 pl-11">
+                    <AccordionContent className="text-sm text-taskify-darkgrey/70 pl-11 dark:text-white/70">
                       <p className="mb-2">
                         Our Privacy Policy describes how we handle your personal information when you use TaskifyX.
                       </p>
@@ -142,44 +142,11 @@ const PrivacySettings: React.FC = () => {
             </Card>
           </FadeIn>
 
-          {/* Data Access Options */}
-          <FadeIn delay={400}>
-            <Card>
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-taskify-blue/10">
-                    <Eye className="h-5 w-5 text-taskify-blue" />
-                  </div>
-                  <h3 className="font-medium text-taskify-darkgrey">Your Data</h3>
-                </div>
-                
-                <div className="pl-12 space-y-3">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full justify-start text-left"
-                    onClick={() => toast.info("Request data feature coming soon")}
-                  >
-                    Request a copy of your data
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full justify-start text-left text-red-500 border-red-200 hover:bg-red-50"
-                    onClick={() => toast.info("Delete account feature coming soon")}
-                  >
-                    Delete your account
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </FadeIn>
-
           {/* Save Button */}
-          <FadeIn delay={500} direction="up" className="mt-8">
+          <FadeIn delay={400} direction="up" className="mt-8">
             <Button
               onClick={handleSave}
-              className="w-full"
+              className="w-full bg-taskify-blue hover:bg-taskify-blue/90 dark:bg-taskify-blue dark:hover:bg-taskify-blue/90"
             >
               Save Changes
             </Button>
