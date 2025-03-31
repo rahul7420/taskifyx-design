@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -53,11 +52,9 @@ const ProfileSettingsPage: React.FC = () => {
     isDarkMode: document.documentElement.classList.contains("dark")
   });
 
-  // This is a placeholder for file upload handling
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // In a real app, you would upload this to storage
       const reader = new FileReader();
       reader.onload = (event) => {
         if (event.target?.result) {
@@ -72,7 +69,6 @@ const ProfileSettingsPage: React.FC = () => {
   };
 
   const handleSaveChanges = () => {
-    // Save to localStorage for demo purposes
     localStorage.setItem("user", JSON.stringify(user));
     toast.success("Profile updated successfully!");
   };
@@ -95,7 +91,6 @@ const ProfileSettingsPage: React.FC = () => {
     localStorage.setItem("theme", newThemeValue ? "dark" : "light");
   };
 
-  // Set initial theme based on stored preference
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -290,8 +285,8 @@ const ProfileSettingsPage: React.FC = () => {
               <Button
                 variant="outline"
                 className="w-full border-red-300 text-red-500 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
-                icon={<LogOut className="h-5 w-5" />}
               >
+                <LogOut className="h-5 w-5 mr-2" />
                 Logout
               </Button>
             </AlertDialogTrigger>
