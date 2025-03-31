@@ -20,6 +20,7 @@ import NotFound from "./pages/NotFound";
 import PrivacySettings from "./components/privacy/PrivacySettings";
 import NotificationSettings from "./components/notifications/NotificationSettings";
 import ProfileSettings from "./components/profile/ProfileSettings";
+import ProfileSettingsPage from "./components/profile/ProfileSettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +53,7 @@ const AnimationLayout = () => {
         <Route path="/settings/privacy" element={<PrivacySettings />} />
         <Route path="/settings/notifications" element={<NotificationSettings />} />
         <Route path="/settings/profile" element={<ProfileSettings />} />
+        <Route path="/profile-settings" element={<ProfileSettingsPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>

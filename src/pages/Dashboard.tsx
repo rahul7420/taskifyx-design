@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import Card from "@/components/common/Card";
 import { useTaskContext } from "@/context/TaskContext";
@@ -28,7 +27,6 @@ const Dashboard = () => {
   const upcomingTasks = getUpcomingTasks(7); // Tasks due in the next 7 days
   
   useEffect(() => {
-    // Get user data from localStorage
     const userData = localStorage.getItem("user");
     if (userData) {
       setUser(JSON.parse(userData));
@@ -45,6 +43,10 @@ const Dashboard = () => {
     return new Date().toLocaleDateString('en-US', options);
   };
 
+  const handleProfileClick = () => {
+    navigate("/profile-settings");
+  };
+
   return (
     <Transition className="min-h-screen pb-20 pt-8">
       <div className="mx-auto max-w-md px-4">
@@ -59,7 +61,7 @@ const Dashboard = () => {
           <FadeIn direction="down">
             <button 
               className="flex items-center gap-2"
-              onClick={() => setShowProfilePopup(true)}
+              onClick={handleProfileClick}
             >
               {user?.name && (
                 <span className="text-sm font-medium text-taskify-darkgrey hidden sm:inline-block">
