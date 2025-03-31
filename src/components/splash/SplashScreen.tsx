@@ -62,12 +62,6 @@ const SplashScreen: React.FC = () => {
             Your Agile Project Manager
           </p>
         </FadeIn>
-
-        <FadeIn delay={1100} duration={800}>
-          <p className="text-[#F0F0F0] text-lg font-semibold font-poppins italic">
-            Simplify, Track, Achieve!
-          </p>
-        </FadeIn>
       </div>
     </motion.div>
   );
