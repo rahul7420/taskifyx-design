@@ -166,14 +166,14 @@ const Index = () => {
             </Button>
           </CardContent>
           <CardFooter className="flex flex-col">
-            <Button 
+{/*             <Button 
               variant="ghost" 
               type="button" 
               className="text-sm text-gray-500 hover:text-gray-900 w-full"
               onClick={handleGetStarted}
             >
-{/*               Continue without signing in */}
-            </Button>
+              Continue without signing in
+            </Button> */}
           </CardFooter>
         </Card>
       </FadeIn>
