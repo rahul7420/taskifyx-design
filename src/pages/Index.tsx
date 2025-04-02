@@ -80,6 +80,9 @@ const Index = () => {
       <FadeIn direction="up" delay={100}>
         <Card className="w-full max-w-md shadow-lg">
           <CardHeader className="space-y-1">
+            <div className="flex justify-center mb-2">
+              <img src="/taskify-logo.svg" alt="TaskifyX Logo" className="h-12 w-12" />
+            </div>
             <CardTitle className="text-2xl font-bold text-center">TaskifyX</CardTitle>
             <CardDescription className="text-center">
               Sign in to your account to continue

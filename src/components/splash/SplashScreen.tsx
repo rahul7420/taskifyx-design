@@ -28,26 +28,13 @@ const SplashScreen: React.FC = () => {
       <div className="flex flex-col items-center justify-center space-y-6 p-8">
         <FadeIn delay={300} duration={800}>
           <div className="relative w-24 h-24 mb-4">
-            <svg
-              viewBox="0 0 24 24"
-              className="w-full h-full text-white drop-shadow-lg"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill="currentColor"
-                d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14h-2v-2h2v2zm0-4h-2V7h2v6z"
-              />
-              <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" strokeWidth="1.5" />
-              <path
-                fill="currentColor"
-                d="M12 6v6l4 2"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-              />
-            </svg>
+            <img 
+              src="/taskify-logo.svg" 
+              alt="TaskifyX Logo" 
+              className="w-full h-full drop-shadow-lg"
+            />
             {/* Glow effect */}
-            <div className="absolute inset-0 bg-white rounded-full blur-lg opacity-30"></div>
+            <div className="absolute inset-0 rounded-full blur-lg opacity-30 bg-white"></div>
           </div>
         </FadeIn>
 
