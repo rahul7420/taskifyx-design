@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useTheme } from '@/context/ThemeContext';
-import { Card } from '@/components/common/Card';
+import Card from '@/components/common/Card';
 import { ThemeToggle } from './ThemeToggle';
 
 const ThemeExample: React.FC = () => {
