@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { 
   ArrowLeft, 
   User, 
@@ -11,6 +12,8 @@ import {
   Shield, 
   LogOut, 
   Upload, 
+  Moon, 
+  Sun,
   Settings as SettingsIcon
 } from "lucide-react";
 import { toast } from "sonner";
@@ -243,6 +246,25 @@ const ProfileSettingsPage: React.FC = () => {
                 >
                   <SettingsIcon className="h-5 w-5" />
                 </button>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900">
+                    {user.isDarkMode ? (
+                      <Moon className="h-5 w-5 text-purple-500 dark:text-purple-300" />
+                    ) : (
+                      <Sun className="h-5 w-5 text-purple-500 dark:text-purple-300" />
+                    )}
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900 dark:text-white">Theme Preference</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {user.isDarkMode ? "Dark Mode" : "Light Mode"}
+                    </p>
+                  </div>
+                </div>
+                <Switch checked={user.isDarkMode} onCheckedChange={toggleTheme} />
               </div>
             </CardContent>
           </Card>
