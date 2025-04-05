@@ -9,6 +9,8 @@ import Navbar from "./components/layout/Navbar";
 import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import SplashScreen from "./components/splash/SplashScreen";
+import { ThemeToggleButton } from "./components/theme/ThemeToggle";
+import ThemeExample from "./components/theme/ThemeExample";
 
 // Pages
 import Index from "./pages/Index";
@@ -54,6 +56,7 @@ const AnimationLayout = () => {
         <Route path="/settings/notifications" element={<NotificationSettings />} />
         <Route path="/settings/profile" element={<ProfileSettings />} />
         <Route path="/profile-settings" element={<ProfileSettingsPage />} />
+        <Route path="/theme-example" element={<ThemeExample />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </AnimatePresence>
@@ -67,6 +70,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <div className="fixed top-6 right-6 z-50">
+            <ThemeToggleButton />
+          </div>
           <AnimationLayout />
           <Navbar />
         </BrowserRouter>
