@@ -17,42 +17,73 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+
+const profileFormSchema = z.object({
+  fullName: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  phone: z.string().optional(),
+  bio: z.string().optional(),
+});
+
+type ProfileFormValues = z.infer<typeof profileFormSchema>;
 
 const ProfileSettings: React.FC = () => {
   const navigate = useNavigate();
-  const [fullName, setFullName] = useState("Alex Johnson");
-  const [email, setEmail] = useState("alex.johnson@example.com");
-  const [isEditingEmail, setIsEditingEmail] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [privacyExpanded, setPrivacyExpanded] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [userAvatar, setUserAvatar] = useState("/placeholder.svg");
 
+  // Initialize form with default values
+  const form = useForm<ProfileFormValues>({
+    resolver: zodResolver(profileFormSchema),
+    defaultValues: {
+      fullName: "Alex Johnson",
+      email: "alex.johnson@example.com",
+      phone: "",
+      bio: "",
+    },
+    mode: "onChange",
+  });
+  
   const handleBackNavigation = () => {
     navigate("/settings");
     console.log("Navigating back to settings page");
   };
 
-  const handleSave = () => {
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        setUserAvatar(e.target.result as string);
+        toast.success("Profile picture updated");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const onSubmit = (data: ProfileFormValues) => {
+    // In a real app, this would save to backend/database
+    console.log("Form submitted:", data);
     toast.success("Profile updated successfully!");
     navigate("/settings");
-  };
-
-  const handleEditEmail = () => {
-    if (isEditingEmail) {
-      // Save email logic would go here
-      toast.success("Email updated successfully!");
-      setIsEditingEmail(false);
-    } else {
-      setIsEditingEmail(true);
-    }
-  };
-
-  const handleCancelEmailEdit = () => {
-    setEmail("alex.johnson@example.com"); // Reset to original
-    setIsEditingEmail(false);
   };
 
   const handlePasswordChange = () => {
@@ -94,78 +125,100 @@ const ProfileSettings: React.FC = () => {
           <div className="relative">
             <div className="w-[100px] h-[100px] rounded-full bg-gray-200 overflow-hidden">
               <img
-                src="/placeholder.svg"
+                src={userAvatar}
                 alt="Profile"
                 className="w-full h-full object-cover"
               />
             </div>
-            <button className="absolute bottom-0 right-0 bg-taskify-blue text-white p-1.5 rounded-full">
+            <label htmlFor="avatar-upload" className="absolute bottom-0 right-0 bg-taskify-blue text-white p-1.5 rounded-full cursor-pointer hover:bg-taskify-blue/80 transition-colors">
               <Edit className="h-4 w-4" />
-            </button>
+              <input 
+                id="avatar-upload" 
+                type="file" 
+                accept="image/*"
+                className="hidden" 
+                onChange={handleAvatarChange}
+              />
+            </label>
           </div>
         </div>
       </FadeIn>
 
       <FadeIn delay={200}>
         <Card>
-          <CardContent className="p-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
-              </label>
-              <Input
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full"
-                placeholder="Enter your name"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
-              </label>
-              <div className="flex items-center">
-                <Input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full ${isEditingEmail ? 'bg-white' : 'bg-gray-50'}`}
-                  placeholder="Enter your email"
-                  readOnly={!isEditingEmail}
+          <CardContent className="p-6">
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="fullName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter your full name" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-                {isEditingEmail ? (
-                  <div className="flex ml-2">
-                    <button
-                      onClick={handleEditEmail}
-                      className="p-2 text-green-600 hover:bg-green-50 rounded mr-1"
-                    >
-                      <Save className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={handleCancelEmailEdit}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <button
-                    onClick={handleEditEmail}
-                    className="ml-2 p-2 text-taskify-blue hover:bg-blue-50 rounded"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-            </div>
 
-            <Button
-              onClick={() => setIsChangePasswordOpen(true)}
-              variant="outline"
-              className="w-full"
-            >
-              Change Password
-            </Button>
+                <FormField
+                  control={form.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email Address</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter your email" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Phone Number (optional)</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Enter your phone number" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="bio"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Bio (optional)</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Tell us about yourself" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="button"
+                  onClick={() => setIsChangePasswordOpen(true)}
+                  variant="outline"
+                  className="w-full"
+                >
+                  Change Password
+                </Button>
+
+                <Button type="submit" className="w-full">
+                  Save Changes
+                </Button>
+              </form>
+            </Form>
           </CardContent>
         </Card>
       </FadeIn>
@@ -231,17 +284,6 @@ const ProfileSettings: React.FC = () => {
             )}
           </CardContent>
         </Card>
-      </FadeIn>
-
-      <FadeIn delay={500}>
-        <div className="flex space-x-4">
-          <Button
-            onClick={handleSave}
-            className="w-full"
-          >
-            Save Changes
-          </Button>
-        </div>
       </FadeIn>
 
       {/* Change Password Dialog */}
