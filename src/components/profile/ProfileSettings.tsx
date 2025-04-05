@@ -223,7 +223,7 @@ const ProfileSettings: React.FC = () => {
         </Card>
       </FadeIn>
 
-      <FadeIn delay={300}>
+{/*       <FadeIn delay={300}>
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -240,7 +240,7 @@ const ProfileSettings: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-      </FadeIn>
+      </FadeIn> */}
 
       <FadeIn delay={400}>
         <Card>
