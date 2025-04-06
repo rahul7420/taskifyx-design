@@ -53,6 +53,7 @@
 
   html, body {
     @apply overscroll-none;
+    height: 100%;
   }
 
   body {
@@ -152,6 +153,11 @@
 
   .mobile-card-spacing {
     @apply space-y-3 sm:space-y-4;
+  }
+
+  /* Scrollable content that works with fixed navbar */
+  .content-container {
+    @apply min-h-screen overflow-y-auto pb-20 sm:pb-24;
   }
 }
 

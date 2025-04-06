@@ -9,6 +9,7 @@ import Navbar from "./components/layout/Navbar";
 import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import SplashScreen from "./components/splash/SplashScreen";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 // Pages
 import Index from "./pages/Index";
@@ -43,20 +44,24 @@ const AnimationLayout = () => {
   }
   
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<Index />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/tasks" element={<Tasks />} />
-        <Route path="/add-task" element={<AddTask />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/settings/privacy" element={<PrivacySettings />} />
-        <Route path="/settings/notifications" element={<NotificationSettings />} />
-        <Route path="/settings/profile" element={<ProfileSettings />} />
-        <Route path="/profile-settings" element={<ProfileSettingsPage />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </AnimatePresence>
+    <ScrollArea className="h-screen w-full">
+      <div className="content-container">
+        <AnimatePresence mode="wait" initial={false}>
+          <Routes location={location} key={location.pathname}>
+            <Route path="/" element={<Index />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/tasks" element={<Tasks />} />
+            <Route path="/add-task" element={<AddTask />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/settings/privacy" element={<PrivacySettings />} />
+            <Route path="/settings/notifications" element={<NotificationSettings />} />
+            <Route path="/settings/profile" element={<ProfileSettings />} />
+            <Route path="/profile-settings" element={<ProfileSettingsPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AnimatePresence>
+      </div>
+    </ScrollArea>
   );
 };
 
