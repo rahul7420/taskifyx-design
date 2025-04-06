@@ -31,7 +31,7 @@ const SettingsOption: React.FC<SettingsOptionProps> = ({
       }}
       onClick={onClick}
       className={cn(
-        "flex cursor-pointer items-center gap-4 rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50",
+        "flex cursor-pointer items-center gap-4 rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50 bg-white text-gray-900",
         className
       )}
     >
