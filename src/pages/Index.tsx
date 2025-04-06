@@ -76,41 +76,41 @@ const Index = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-3 sm:p-4">
       <FadeIn direction="up" delay={100}>
-        <Card className="w-full max-w-md shadow-lg">
-          <CardHeader className="space-y-1">
+        <Card className="w-full max-w-sm sm:max-w-md shadow-lg">
+          <CardHeader className="space-y-1 px-4 pt-5 sm:px-6 sm:pt-6">
             <div className="flex justify-center mb-2">
-              <img src="/taskify-logo.svg" alt="TaskifyX Logo" className="h-12 w-12" />
+              <img src="/taskify-logo.svg" alt="TaskifyX Logo" className="h-10 w-10 sm:h-12 sm:w-12" />
             </div>
-            <CardTitle className="text-2xl font-bold text-center">TaskifyX</CardTitle>
-            <CardDescription className="text-center">
+            <CardTitle className="text-xl sm:text-2xl font-bold text-center">TaskifyX</CardTitle>
+            <CardDescription className="text-sm text-center">
               Sign in to your account to continue
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSignIn} className="space-y-4">
+          <CardContent className="px-4 sm:px-6">
+            <form onSubmit={handleSignIn} className="space-y-3 sm:space-y-4">
               <div className="space-y-2">
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <Mail className="absolute left-2 sm:left-3 top-2.5 sm:top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                   <Input 
                     type="email"
                     placeholder="Email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
+                    className="pl-8 sm:pl-10 text-sm h-9 sm:h-10"
                   />
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                  <Lock className="absolute left-2 sm:left-3 top-2.5 sm:top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                   <Input 
                     type="password"
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10"
+                    className="pl-8 sm:pl-10 text-sm h-9 sm:h-10"
                   />
                 </div>
               </div>
@@ -123,17 +123,18 @@ const Index = () => {
                       setRememberMe(checked);
                     }
                   }}
+                  className="h-3.5 w-3.5 sm:h-4 sm:w-4"
                 />
-                <label htmlFor="remember-me" className="text-sm text-gray-500 cursor-pointer">
+                <label htmlFor="remember-me" className="text-xs sm:text-sm text-gray-500 cursor-pointer">
                   Remember me
                 </label>
               </div>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full text-sm h-9 sm:h-10">
                 Sign In
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </form>
-            <div className="relative my-4">
+            <div className="relative my-3 sm:my-4">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-gray-300"></div>
               </div>
@@ -144,10 +145,10 @@ const Index = () => {
             <Button 
               variant="outline" 
               type="button" 
-              className="w-full"
+              className="w-full text-sm h-9 sm:h-10"
               onClick={handleGoogleSignIn}
             >
-              <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+              <svg className="mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -168,15 +169,8 @@ const Index = () => {
               Sign in with Google
             </Button>
           </CardContent>
-          <CardFooter className="flex flex-col">
-{/*             <Button 
-              variant="ghost" 
-              type="button" 
-              className="text-sm text-gray-500 hover:text-gray-900 w-full"
-              onClick={handleGetStarted}
-            >
-              Continue without signing in
-            </Button> */}
+          <CardFooter className="flex flex-col px-4 pb-5 pt-0 sm:px-6 sm:pb-6">
+            {/* Footer content if needed */}
           </CardFooter>
         </Card>
       </FadeIn>

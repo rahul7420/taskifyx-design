@@ -30,9 +30,9 @@ const Button: React.FC<ButtonProps> = ({
   };
 
   const sizes = {
-    sm: "h-9 px-3 rounded-lg text-sm",
-    md: "h-11 px-5 rounded-lg text-base",
-    lg: "h-14 px-8 rounded-xl text-lg",
+    sm: "h-8 sm:h-9 px-2 sm:px-3 rounded-lg text-xs sm:text-sm",
+    md: "h-10 sm:h-11 px-4 sm:px-5 rounded-lg text-sm sm:text-base",
+    lg: "h-12 sm:h-14 px-6 sm:px-8 rounded-xl text-base sm:text-lg",
   };
 
   return (
@@ -72,7 +72,7 @@ const Button: React.FC<ButtonProps> = ({
       )}
       <span
         className={cn(
-          "flex items-center gap-2",
+          "flex items-center gap-1 sm:gap-2",
           isLoading && "invisible"
         )}
       >

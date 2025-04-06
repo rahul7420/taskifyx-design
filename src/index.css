@@ -90,7 +90,7 @@
 
   /* Task card styles */
   .task-card {
-    @apply relative overflow-hidden rounded-2xl p-6 transition-all duration-300 ease-in-out;
+    @apply relative overflow-hidden rounded-2xl p-4 sm:p-6 transition-all duration-300 ease-in-out;
   }
 
   .task-card::before {
@@ -135,6 +135,23 @@
 
   .page-transition-exit-active {
     @apply opacity-0 transition-opacity duration-300;
+  }
+
+  /* Mobile responsive utilities */
+  .mobile-container {
+    @apply px-3 sm:px-4 mx-auto max-w-md;
+  }
+
+  .mobile-heading {
+    @apply text-lg sm:text-xl font-bold;
+  }
+  
+  .mobile-subheading {
+    @apply text-xs sm:text-sm text-taskify-darkgrey/60;
+  }
+
+  .mobile-card-spacing {
+    @apply space-y-3 sm:space-y-4;
   }
 }
 

@@ -57,17 +57,17 @@ const Settings = () => {
 
   return (
     <Transition className="min-h-screen pb-16 sm:pb-20 pt-6 sm:pt-8 dark:bg-taskify-darkgrey">
-      <div className="mx-auto max-w-md px-3 sm:px-4">
+      <div className="mobile-container">
         <header className="mb-4 sm:mb-6">
           <FadeIn direction="down">
-            <h2 className="text-lg sm:text-xl font-bold text-taskify-darkgrey dark:text-white">Settings</h2>
-            <p className="text-xs sm:text-sm text-taskify-darkgrey/60 dark:text-white/60">
+            <h2 className="mobile-heading dark:text-white">Settings</h2>
+            <p className="mobile-subheading dark:text-white/60">
               Customize your TaskifyX experience
             </p>
           </FadeIn>
         </header>
 
-        <div className="space-y-3 sm:space-y-4">
+        <div className="mobile-card-spacing">
           {/* Profile Settings */}
           <SettingsOption
             icon={<User className="h-4 w-4 sm:h-5 sm:w-5 text-taskify-blue dark:text-taskify-blue" />}
@@ -109,7 +109,7 @@ const Settings = () => {
                 Logout
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="max-w-xs sm:max-w-md mx-auto dark:bg-taskify-darkgrey dark:text-white">
+            <AlertDialogContent className="max-w-[90%] sm:max-w-md mx-auto dark:bg-taskify-darkgrey dark:text-white">
               <AlertDialogHeader>
                 <AlertDialogTitle className="text-base sm:text-lg dark:text-white">Are you sure you want to logout?</AlertDialogTitle>
                 <AlertDialogDescription className="text-sm dark:text-white/60">
@@ -117,11 +117,11 @@ const Settings = () => {
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel className="text-sm dark:bg-taskify-darkgrey dark:text-white dark:hover:bg-taskify-darkgrey/80">
+                <AlertDialogCancel className="text-xs sm:text-sm dark:bg-taskify-darkgrey dark:text-white dark:hover:bg-taskify-darkgrey/80">
                   Cancel
                 </AlertDialogCancel>
                 <AlertDialogAction
-                  className="text-sm bg-red-500 text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800"
+                  className="text-xs sm:text-sm bg-red-500 text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800"
                   onClick={handleLogout}
                 >
                   Yes, logout

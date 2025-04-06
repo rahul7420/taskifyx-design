@@ -3,6 +3,7 @@ import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { HomeIcon, ListIcon, PlusIcon, Settings } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface NavItem {
   path: string;
@@ -12,27 +13,28 @@ interface NavItem {
 
 const Navbar: React.FC = () => {
   const location = useLocation();
+  const isMobile = useIsMobile();
   
   const navItems: NavItem[] = [
     {
       path: "/dashboard",
       label: "Home",
-      icon: <HomeIcon className="h-5 w-5" />,
+      icon: <HomeIcon className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
     {
       path: "/tasks",
       label: "Tasks",
-      icon: <ListIcon className="h-5 w-5" />,
+      icon: <ListIcon className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
     {
       path: "/add-task",
       label: "Add",
-      icon: <PlusIcon className="h-5 w-5" />,
+      icon: <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
     {
       path: "/settings",
       label: "Settings",
-      icon: <Settings className="h-5 w-5" />,
+      icon: <Settings className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
   ];
 
@@ -43,14 +45,14 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-taskify-grey/20">
-      <div className="mx-auto flex h-16 max-w-md items-center justify-around px-4">
+      <div className="mx-auto flex h-14 sm:h-16 max-w-md items-center justify-around px-2 sm:px-4">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
               cn(
-                "flex flex-col items-center justify-center rounded-md px-3 py-2 text-xs font-medium transition-colors",
+                "flex flex-col items-center justify-center rounded-md px-2 sm:px-3 py-1 sm:py-2 text-xs font-medium transition-colors",
                 isActive
                   ? "text-taskify-blue"
                   : "text-taskify-darkgrey/60 hover:text-taskify-darkgrey"
@@ -61,7 +63,7 @@ const Navbar: React.FC = () => {
               <>
                 <div
                   className={cn(
-                    "mb-1 flex h-8 w-8 items-center justify-center rounded-full transition-all",
+                    "mb-1 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-all",
                     isActive
                       ? "bg-taskify-blue/10"
                       : "bg-transparent group-hover:bg-muted"
@@ -69,7 +71,7 @@ const Navbar: React.FC = () => {
                 >
                   {item.icon}
                 </div>
-                <span>{item.label}</span>
+                <span className="text-[10px] sm:text-xs">{item.label}</span>
               </>
             )}
           </NavLink>
