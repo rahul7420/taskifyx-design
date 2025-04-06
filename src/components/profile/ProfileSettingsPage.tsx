@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
@@ -35,7 +36,6 @@ interface UserProfile {
   phone: string;
   bio: string;
   profilePicture: string;
-  isDarkMode: boolean;
 }
 
 const ProfileSettingsPage: React.FC = () => {
@@ -46,7 +46,6 @@ const ProfileSettingsPage: React.FC = () => {
     phone: "+1 234 567 8901",
     bio: "Product designer and developer based in San Francisco.",
     profilePicture: "https://ui-avatars.com/api/?name=Alex+Johnson&background=random",
-    isDarkMode: document.documentElement.classList.contains("dark")
   });
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +74,6 @@ const ProfileSettingsPage: React.FC = () => {
     navigate("/");
   };
 
-  // Keep the theme functionality but don't display it in the UI
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
@@ -85,15 +83,6 @@ const ProfileSettingsPage: React.FC = () => {
         console.error("Failed to parse stored user data:", error);
       }
     }
-
-    const storedTheme = localStorage.getItem("theme");
-    if (storedTheme === "dark" || (!storedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
-      document.documentElement.classList.add("dark");
-      setUser(prev => ({ ...prev, isDarkMode: true }));
-    } else {
-      document.documentElement.classList.remove("dark");
-      setUser(prev => ({ ...prev, isDarkMode: false }));
-    }
   }, []);
 
   const navigateBack = () => {
@@ -101,27 +90,27 @@ const ProfileSettingsPage: React.FC = () => {
   };
 
   return (
-    <Transition className="min-h-screen pb-20 pt-8 dark:bg-gray-900">
+    <Transition className="min-h-screen pb-20 pt-8">
       <div className="mx-auto max-w-md px-4">
         <FadeIn direction="down">
           <div className="flex items-center mb-6">
             <button
               onClick={navigateBack}
-              className="flex items-center justify-center w-10 h-10 mr-4 rounded-full bg-white shadow-sm hover:bg-gray-100 transition-colors dark:bg-gray-800 dark:hover:bg-gray-700"
+              className="flex items-center justify-center w-10 h-10 mr-4 rounded-full bg-white shadow-sm hover:bg-gray-100 transition-colors"
               aria-label="Back"
             >
-              <ArrowLeft className="h-6 w-6 text-gray-700 dark:text-gray-300" strokeWidth={2.5} />
+              <ArrowLeft className="h-6 w-6 text-gray-700" strokeWidth={2.5} />
             </button>
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Profile Settings</h2>
+            <h2 className="text-xl font-bold text-gray-800">Profile Settings</h2>
           </div>
         </FadeIn>
 
         <FadeIn delay={100}>
-          <Card className="mb-6 dark:bg-gray-800 dark:border-gray-700">
+          <Card className="mb-6">
             <CardContent className="p-6">
               <div className="flex justify-center mb-6">
                 <div className="relative">
-                  <Avatar className="w-24 h-24 border-4 border-white dark:border-gray-800 shadow-md">
+                  <Avatar className="w-24 h-24 border-4 border-white shadow-md">
                     <AvatarImage src={user.profilePicture} alt={user.name} />
                     <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                   </Avatar>
@@ -140,52 +129,52 @@ const ProfileSettingsPage: React.FC = () => {
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Full Name
                   </label>
                   <Input
                     value={user.name}
                     onChange={(e) => setUser({ ...user, name: e.target.value })}
-                    className="w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="w-full"
                     placeholder="Enter your name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Email Address
                   </label>
                   <Input
                     value={user.email}
                     readOnly
-                    className="w-full bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white cursor-not-allowed"
+                    className="w-full bg-gray-50 cursor-not-allowed"
                     placeholder="Your email (Google Sign-in)"
                   />
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-xs text-gray-500 mt-1">
                     This email is linked to your Google account and cannot be changed.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Phone Number
                   </label>
                   <Input
                     value={user.phone}
                     onChange={(e) => setUser({ ...user, phone: e.target.value })}
-                    className="w-full dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="w-full"
                     placeholder="Enter your phone number"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Bio
                   </label>
                   <Textarea
                     value={user.bio}
                     onChange={(e) => setUser({ ...user, bio: e.target.value })}
-                    className="w-full min-h-[100px] dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                    className="w-full min-h-[100px]"
                     placeholder="Tell us about yourself"
                   />
                 </div>
@@ -195,21 +184,21 @@ const ProfileSettingsPage: React.FC = () => {
         </FadeIn>
 
         <FadeIn delay={200}>
-          <Card className="mb-6 dark:bg-gray-800 dark:border-gray-700">
+          <Card className="mb-6">
             <CardContent className="p-6 space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-                    <Bell className="h-5 w-5 text-blue-500 dark:text-blue-300" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                    <Bell className="h-5 w-5 text-blue-500" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900 dark:text-white">Notification Settings</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Manage how you receive notifications</p>
+                    <h3 className="font-medium text-gray-900">Notification Settings</h3>
+                    <p className="text-sm text-gray-500">Manage how you receive notifications</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => navigate("/settings/notifications")}
-                  className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                  className="text-blue-500 hover:text-blue-600"
                 >
                   <SettingsIcon className="h-5 w-5" />
                 </button>
@@ -217,17 +206,17 @@ const ProfileSettingsPage: React.FC = () => {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-                    <Shield className="h-5 w-5 text-green-500 dark:text-green-300" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+                    <Shield className="h-5 w-5 text-green-500" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-gray-900 dark:text-white">Privacy Settings</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Manage your privacy and data</p>
+                    <h3 className="font-medium text-gray-900">Privacy Settings</h3>
+                    <p className="text-sm text-gray-500">Manage your privacy and data</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => navigate("/settings/privacy")}
-                  className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                  className="text-blue-500 hover:text-blue-600"
                 >
                   <SettingsIcon className="h-5 w-5" />
                 </button>
@@ -239,7 +228,7 @@ const ProfileSettingsPage: React.FC = () => {
         <FadeIn delay={300}>
           <Button
             onClick={handleSaveChanges}
-            className="w-full mb-4 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+            className="w-full mb-4 bg-blue-500 hover:bg-blue-600"
           >
             Save Changes
           </Button>
@@ -250,25 +239,25 @@ const ProfileSettingsPage: React.FC = () => {
             <AlertDialogTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full border-red-300 text-red-500 hover:bg-red-50 dark:border-red-700 dark:text-red-400 dark:hover:bg-red-900/20"
+                className="w-full border-red-300 text-red-500 hover:bg-red-50"
               >
                 <LogOut className="h-5 w-5 mr-2" />
                 Logout
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent className="dark:bg-gray-800 dark:text-white">
+            <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle className="dark:text-white">Are you sure you want to logout?</AlertDialogTitle>
-                <AlertDialogDescription className="dark:text-gray-400">
+                <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
+                <AlertDialogDescription>
                   You will need to sign in again to access your tasks and projects.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel className="dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">
+                <AlertDialogCancel>
                   Cancel
                 </AlertDialogCancel>
                 <AlertDialogAction
-                  className="bg-red-500 text-white hover:bg-red-600 dark:bg-red-700 dark:hover:bg-red-800"
+                  className="bg-red-500 text-white hover:bg-red-600"
                   onClick={handleLogout}
                 >
                   Yes, logout

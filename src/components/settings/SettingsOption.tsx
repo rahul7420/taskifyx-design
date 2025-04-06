@@ -31,16 +31,16 @@ const SettingsOption: React.FC<SettingsOptionProps> = ({
       }}
       onClick={onClick}
       className={cn(
-        "flex cursor-pointer items-center gap-4 rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50 dark:border-gray-800 dark:hover:bg-gray-800/50",
+        "flex cursor-pointer items-center gap-4 rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50",
         className
       )}
     >
-      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100">
         {icon}
       </div>
       <div className="flex-1">
-        <h3 className="font-medium text-gray-900 dark:text-gray-100">{title}</h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+        <h3 className="font-medium text-gray-900">{title}</h3>
+        <p className="text-sm text-gray-500">{description}</p>
       </div>
     </motion.div>
   );
