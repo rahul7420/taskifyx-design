@@ -225,7 +225,7 @@ const AddTask: React.FC = () => {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>Sprints</SelectLabel>
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {sprints.map((sprint) => (
                         <SelectItem key={sprint.id} value={sprint.id}>
                           {sprint.name}
