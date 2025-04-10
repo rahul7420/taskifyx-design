@@ -1,213 +1,252 @@
 
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTaskContext } from "@/context/TaskContext";
-import Button from "@/components/common/Button";
-import Transition from "@/components/animations/Transition";
-import { Calendar as CalendarIcon, Check } from "lucide-react";
-import FadeIn from "@/components/animations/FadeIn";
-import { cn } from "@/lib/utils";
+import { useSprintContext } from "@/context/SprintContext";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { CalendarIcon, ArrowLeft } from "lucide-react";
+import Transition from "@/components/animations/Transition";
 import { toast } from "sonner";
 
-const AddTask = () => {
-  const navigate = useNavigate();
+const formSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().min(1, "Description is required"),
+  dueDate: z.date({
+    required_error: "Due date is required",
+  }),
+  priority: z.enum(["high", "medium", "low"]),
+  sprintId: z.string().optional(),
+});
+
+type FormValues = z.infer<typeof formSchema>;
+
+const AddTask: React.FC = () => {
   const { addTask } = useTaskContext();
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [dueDate, setDueDate] = useState<Date | undefined>(new Date());
-  const [priority, setPriority] = useState<"low" | "medium" | "high">("medium");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { sprints } = useSprintContext();
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Get sprint ID from URL query params if it exists
+  const queryParams = new URLSearchParams(location.search);
+  const sprintIdParam = queryParams.get("sprint");
+  
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      dueDate: new Date(),
+      priority: "medium",
+      sprintId: sprintIdParam || "",
+    },
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim()) {
-      toast.error("Please enter a task title");
-      return;
+  // Set the default sprint if provided in URL
+  useEffect(() => {
+    if (sprintIdParam) {
+      form.setValue("sprintId", sprintIdParam);
     }
+  }, [sprintIdParam, form]);
 
-    if (!dueDate) {
-      toast.error("Please select a due date");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      addTask({
-        title,
-        description,
-        dueDate: dueDate.toISOString(),
-        priority,
-        status: "todo",
-      });
-
-      toast.success("Task added successfully");
-      setIsSubmitting(false);
+  const onSubmit = (data: FormValues) => {
+    addTask({
+      title: data.title,
+      description: data.description,
+      dueDate: data.dueDate.toISOString(),
+      priority: data.priority,
+      status: "todo",
+      sprintId: data.sprintId || undefined,
+    });
+    
+    toast.success("Task created successfully!");
+    
+    // Navigate back to the tasks page with sprint filter if applicable
+    if (data.sprintId) {
+      const sprint = sprints.find(s => s.id === data.sprintId);
+      navigate(`/tasks?sprint=${data.sprintId}${sprint ? `&name=${encodeURIComponent(sprint.name)}` : ''}`);
+    } else {
       navigate("/tasks");
-    }, 500);
+    }
+  };
+
+  const goBack = () => {
+    if (sprintIdParam) {
+      const sprint = sprints.find(s => s.id === sprintIdParam);
+      navigate(`/tasks?sprint=${sprintIdParam}${sprint ? `&name=${encodeURIComponent(sprint.name)}` : ''}`);
+    } else {
+      navigate("/tasks");
+    }
   };
 
   return (
-    <Transition className="min-h-screen pb-20 pt-8">
-      <div className="mx-auto max-w-md px-4">
-        <header className="mb-6">
-          <FadeIn direction="down">
-            <h2 className="text-xl font-bold text-taskify-darkgrey">Add New Task</h2>
-            <p className="text-sm text-taskify-darkgrey/60">
-              Create a new task to track
-            </p>
-          </FadeIn>
-        </header>
+    <Transition className="container max-w-md py-8 px-4">
+      <Button 
+        variant="ghost" 
+        className="mb-6 -ml-2 text-taskify-darkgrey/70 hover:bg-taskify-lightgrey/50 hover:text-taskify-darkgrey group"
+        onClick={goBack}
+      >
+        <ArrowLeft className="h-4 w-4 mr-1 group-hover:-translate-x-1 transition-transform duration-200" />
+        Back to Tasks
+      </Button>
+      
+      <h2 className="text-2xl font-bold mb-6 text-taskify-darkgrey">Add New Task</h2>
+      
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-taskify-darkgrey">Task title</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="Enter task title" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <FadeIn direction="up" delay={100}>
-            <div className="space-y-2">
-              <label
-                htmlFor="title"
-                className="text-sm font-medium text-taskify-darkgrey"
-              >
-                Task Title
-              </label>
-              <input
-                id="title"
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Enter task title"
-                className="w-full rounded-lg border border-taskify-grey/30 bg-white p-3 text-taskify-darkgrey outline-none focus:border-taskify-blue focus:ring-2 focus:ring-taskify-blue/20"
-                required
-              />
-            </div>
-          </FadeIn>
-
-          <FadeIn direction="up" delay={200}>
-            <div className="space-y-2">
-              <label
-                htmlFor="description"
-                className="text-sm font-medium text-taskify-darkgrey"
-              >
-                Description
-              </label>
-              <textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Enter task description"
-                rows={4}
-                className="w-full rounded-lg border border-taskify-grey/30 bg-white p-3 text-taskify-darkgrey outline-none focus:border-taskify-blue focus:ring-2 focus:ring-taskify-blue/20"
-              />
-            </div>
-          </FadeIn>
-
-          <FadeIn direction="up" delay={300}>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-taskify-darkgrey">
-                Due Date
-              </label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className={cn(
-                      "flex w-full items-center justify-between rounded-lg border border-taskify-grey/30 bg-white p-3 text-left text-taskify-darkgrey outline-none focus:border-taskify-blue focus:ring-2 focus:ring-taskify-blue/20",
-                      !dueDate && "text-taskify-darkgrey/60"
-                    )}
-                  >
-                    {dueDate ? format(dueDate, "PPP") : "Select a date"}
-                    <CalendarIcon className="h-4 w-4 text-taskify-darkgrey/60" />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={dueDate}
-                    onSelect={setDueDate}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-taskify-darkgrey">Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Enter task description"
+                    className="resize-none min-h-[100px]"
+                    {...field}
                   />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </FadeIn>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FadeIn direction="up" delay={400}>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-taskify-darkgrey">
-                Priority
-              </label>
-              <div className="flex rounded-lg border border-taskify-grey/30 bg-white p-1">
-                <button
-                  type="button"
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-md py-2 text-sm transition-colors ${
-                    priority === "low"
-                      ? "bg-green-500 text-white"
-                      : "text-taskify-darkgrey/70 hover:bg-taskify-lightgrey/50"
-                  }`}
-                  onClick={() => setPriority("low")}
-                >
-                  {priority === "low" && <Check className="h-3 w-3" />}
-                  Low
-                </button>
-                <button
-                  type="button"
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-md py-2 text-sm transition-colors ${
-                    priority === "medium"
-                      ? "bg-orange-500 text-white"
-                      : "text-taskify-darkgrey/70 hover:bg-taskify-lightgrey/50"
-                  }`}
-                  onClick={() => setPriority("medium")}
-                >
-                  {priority === "medium" && <Check className="h-3 w-3" />}
-                  Medium
-                </button>
-                <button
-                  type="button"
-                  className={`flex flex-1 items-center justify-center gap-2 rounded-md py-2 text-sm transition-colors ${
-                    priority === "high"
-                      ? "bg-red-500 text-white"
-                      : "text-taskify-darkgrey/70 hover:bg-taskify-lightgrey/50"
-                  }`}
-                  onClick={() => setPriority("high")}
-                >
-                  {priority === "high" && <Check className="h-3 w-3" />}
-                  High
-                </button>
-              </div>
-            </div>
-          </FadeIn>
+          <FormField
+            control={form.control}
+            name="dueDate"
+            render={({ field }) => (
+              <FormItem className="flex flex-col">
+                <FormLabel className="text-taskify-darkgrey">Due date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "pl-3 text-left font-normal",
+                          !field.value && "text-muted-foreground"
+                        )}
+                      >
+                        {field.value ? (
+                          format(field.value, "PPP")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      disabled={(date) =>
+                        date < new Date(new Date().setHours(0, 0, 0, 0))
+                      }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-          <FadeIn direction="up" delay={500}>
-            <div className="flex flex-col gap-3 pt-4">
-              <Button
-                type="submit"
-                variant="gradient"
-                size="lg"
-                className="w-full"
-                isLoading={isSubmitting}
-              >
-                Add Task
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                className="w-full"
-                onClick={() => navigate(-1)}
-              >
-                Cancel
-              </Button>
-            </div>
-          </FadeIn>
+          <FormField
+            control={form.control}
+            name="priority"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-taskify-darkgrey">Priority</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Priority</SelectLabel>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="sprintId"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-taskify-darkgrey">Sprint (Optional)</FormLabel>
+                <Select
+                  onValueChange={field.onChange}
+                  value={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Assign to a sprint (optional)" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Sprints</SelectLabel>
+                      <SelectItem value="">None</SelectItem>
+                      {sprints.map((sprint) => (
+                        <SelectItem key={sprint.id} value={sprint.id}>
+                          {sprint.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button
+            type="submit"
+            className="w-full bg-taskify-blue hover:bg-taskify-blue/90"
+          >
+            Create Task
+          </Button>
         </form>
-      </div>
+      </Form>
     </Transition>
   );
 };

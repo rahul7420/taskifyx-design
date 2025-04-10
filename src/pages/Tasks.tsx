@@ -1,20 +1,51 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTaskContext, Task } from "@/context/TaskContext";
+import { useLocation, useNavigate } from "react-router-dom";
 import Card from "@/components/common/Card";
-import { Check, Clock, CheckCircle, XCircle, Edit, Trash2 } from "lucide-react";
+import { Check, Clock, CheckCircle, XCircle, Edit, Trash2, ArrowLeft, Plus } from "lucide-react";
 import Transition from "@/components/animations/Transition";
 import FadeIn from "@/components/animations/FadeIn";
+import { Button } from "@/components/ui/button";
+import { useSprintContext } from "@/context/SprintContext";
 
 type TabType = "all" | "todo" | "inprogress" | "completed";
 
 const Tasks = () => {
   const { tasks, updateTask, deleteTask } = useTaskContext();
+  const { sprints } = useSprintContext();
   const [activeTab, setActiveTab] = useState<TabType>("all");
-
+  const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Get sprint filter from URL query params
+  const queryParams = new URLSearchParams(location.search);
+  const sprintId = queryParams.get("sprint");
+  const sprintName = queryParams.get("name");
+  
+  // Filter tasks by sprint if sprintId is provided
+  const sprintTasks = sprintId 
+    ? tasks.filter(task => task.sprintId === sprintId)
+    : tasks;
+  
+  // Then filter by status if activeTab is not 'all'
   const filteredTasks = activeTab === "all" 
-    ? tasks 
-    : tasks.filter(task => task.status === activeTab);
+    ? sprintTasks 
+    : sprintTasks.filter(task => task.status === activeTab);
+
+  // Handle adding a task to the current sprint
+  const handleAddTask = () => {
+    if (sprintId) {
+      navigate(`/add-task?sprint=${sprintId}`);
+    } else {
+      navigate("/add-task");
+    }
+  };
+
+  // Navigate back to sprints page
+  const handleBackToSprints = () => {
+    navigate("/sprints");
+  };
 
   const handleStatusChange = (task: Task, newStatus: Task["status"]) => {
     updateTask({
@@ -62,15 +93,47 @@ const Tasks = () => {
     }
   };
 
+  // Group tasks by status for display
+  const groupedTasks = {
+    todo: filteredTasks.filter(task => task.status === "todo"),
+    inprogress: filteredTasks.filter(task => task.status === "inprogress"),
+    completed: filteredTasks.filter(task => task.status === "completed")
+  };
+
   return (
     <Transition className="min-h-screen pb-20 pt-8">
-      <div className="mx-auto max-w-md px-4">
+      <div className="mx-auto max-w-4xl px-4">
         <header className="mb-6">
           <FadeIn direction="down">
-            <h2 className="text-xl font-bold text-taskify-darkgrey">Tasks</h2>
-            <p className="text-sm text-taskify-darkgrey/60">
-              {filteredTasks.length} task{filteredTasks.length !== 1 ? "s" : ""}
-            </p>
+            {sprintId && (
+              <Button 
+                variant="ghost" 
+                className="mb-3 -ml-2 text-taskify-darkgrey/70 hover:text-taskify-darkgrey hover:bg-taskify-lightgrey/50 group"
+                onClick={handleBackToSprints}
+              >
+                <ArrowLeft className="h-4 w-4 mr-1 group-hover:-translate-x-1 transition-transform duration-200" />
+                Back to Sprints
+              </Button>
+            )}
+            
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-bold text-taskify-darkgrey">
+                  {sprintName ? `Tasks for ${sprintName}` : "All Tasks"}
+                </h2>
+                <p className="text-sm text-taskify-darkgrey/60">
+                  {filteredTasks.length} task{filteredTasks.length !== 1 ? "s" : ""}
+                </p>
+              </div>
+              
+              <Button 
+                className="bg-taskify-blue hover:bg-taskify-blue/90" 
+                onClick={handleAddTask}
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Add Task
+              </Button>
+            </div>
           </FadeIn>
         </header>
 
@@ -188,17 +251,37 @@ const Tasks = () => {
                 <h3 className="text-lg font-medium text-taskify-darkgrey">No tasks found</h3>
                 <p className="mt-1 text-center text-sm text-taskify-darkgrey/60">
                   {activeTab === "all"
-                    ? "You don't have any tasks yet."
+                    ? sprintId
+                      ? `No tasks found for this sprint.`
+                      : "You don't have any tasks yet."
                     : activeTab === "todo"
                     ? "You don't have any to-do tasks."
                     : activeTab === "inprogress"
                     ? "You don't have any in-progress tasks."
                     : "You don't have any completed tasks."}
                 </p>
+                <Button 
+                  className="mt-4 bg-taskify-blue hover:bg-taskify-blue/90" 
+                  onClick={handleAddTask}
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Add Task
+                </Button>
               </div>
             </FadeIn>
           )}
         </div>
+      </div>
+
+      {/* Mobile floating action button */}
+      <div className="md:hidden fixed bottom-20 right-4 z-10">
+        <Button 
+          onClick={handleAddTask} 
+          size="icon"
+          className="h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-taskify-blue to-taskify-violet hover:opacity-90 transition-all duration-300"
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
       </div>
     </Transition>
   );

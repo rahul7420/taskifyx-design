@@ -1,8 +1,9 @@
 
 import React, { useState } from "react";
-import { PlusCircle, Calendar, CheckCircle2 } from "lucide-react";
+import { PlusCircle, Calendar, CheckCircle2, ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { format } from "date-fns";
+import { useNavigate } from "react-router-dom";
 import { useTaskContext } from "@/context/TaskContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ const SprintManagement: React.FC = () => {
   const [open, setOpen] = useState(false);
   const { sprints, addSprint } = useSprintContext();
   const { tasks } = useTaskContext();
+  const navigate = useNavigate();
   
   const form = useForm({
     defaultValues: {
@@ -55,6 +57,10 @@ const SprintManagement: React.FC = () => {
     const diffTime = Math.abs(end.getTime() - start.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
+  };
+
+  const viewSprintTasks = (sprintId: string, sprintName: string) => {
+    navigate(`/tasks?sprint=${sprintId}&name=${encodeURIComponent(sprintName)}`);
   };
 
   return (
@@ -193,10 +199,11 @@ const SprintManagement: React.FC = () => {
                   
                   <Button 
                     variant="outline" 
-                    className="w-full mt-2"
-                    onClick={() => toast.info(`Viewing tasks for ${sprint.name}`)}
+                    className="w-full mt-2 group"
+                    onClick={() => viewSprintTasks(sprint.id, sprint.name)}
                   >
                     View Tasks
+                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform duration-200" />
                   </Button>
                 </div>
               </CardContent>
