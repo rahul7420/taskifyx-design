@@ -8,6 +8,7 @@ export interface Task {
   dueDate: string;
   priority: "high" | "medium" | "low";
   status: "todo" | "inprogress" | "completed";
+  sprintId?: string;
 }
 
 interface TaskContextType {
@@ -17,6 +18,7 @@ interface TaskContextType {
   deleteTask: (id: string) => void;
   getTasksByStatus: (status: Task["status"]) => Task[];
   getUpcomingTasks: (days: number) => Task[];
+  getTasksBySprint: (sprintId: string) => Task[];
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -40,6 +42,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         dueDate: new Date(Date.now() + 86400000 * 2).toISOString(), // 2 days from now
         priority: "high",
         status: "todo",
+        sprintId: "2"
       },
       {
         id: "2",
@@ -48,6 +51,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         dueDate: new Date(Date.now() + 86400000 * 5).toISOString(), // 5 days from now
         priority: "medium",
         status: "todo",
+        sprintId: "2"
       },
       {
         id: "3",
@@ -56,6 +60,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         dueDate: new Date(Date.now() - 86400000 * 1).toISOString(), // 1 day ago
         priority: "medium",
         status: "inprogress",
+        sprintId: "2"
       },
       {
         id: "4",
@@ -64,6 +69,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         dueDate: new Date(Date.now() - 86400000 * 3).toISOString(), // 3 days ago
         priority: "low",
         status: "completed",
+        sprintId: "1"
       }
     ];
   });
@@ -104,6 +110,10 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return taskDate >= currentDate && taskDate <= futureDate && task.status !== "completed";
     });
   };
+  
+  const getTasksBySprint = (sprintId: string) => {
+    return tasks.filter(task => task.sprintId === sprintId);
+  };
 
   return (
     <TaskContext.Provider
@@ -114,6 +124,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         deleteTask,
         getTasksByStatus,
         getUpcomingTasks,
+        getTasksBySprint
       }}
     >
       {children}

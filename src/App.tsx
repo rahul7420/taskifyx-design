@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { TaskProvider } from "./context/TaskContext";
+import { SprintProvider } from "./context/SprintContext";
 import Navbar from "./components/layout/Navbar";
 import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
@@ -18,6 +19,8 @@ import Tasks from "./pages/Tasks";
 import AddTask from "./pages/AddTask";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import SprintManagement from "./pages/SprintManagement";
+import SprintRetrospective from "./pages/SprintRetrospective";
 import PrivacySettings from "./components/privacy/PrivacySettings";
 import NotificationSettings from "./components/notifications/NotificationSettings";
 import ProfileSettings from "./components/profile/ProfileSettings";
@@ -53,6 +56,8 @@ const AnimationLayout = () => {
             <Route path="/tasks" element={<Tasks />} />
             <Route path="/add-task" element={<AddTask />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/sprints" element={<SprintManagement />} />
+            <Route path="/retrospectives" element={<SprintRetrospective />} />
             <Route path="/settings/privacy" element={<PrivacySettings />} />
             <Route path="/settings/notifications" element={<NotificationSettings />} />
             <Route path="/settings/profile" element={<ProfileSettings />} />
@@ -68,14 +73,16 @@ const AnimationLayout = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TaskProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AnimationLayout />
-          <Navbar />
-        </BrowserRouter>
-      </TooltipProvider>
+      <SprintProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AnimationLayout />
+            <Navbar />
+          </BrowserRouter>
+        </TooltipProvider>
+      </SprintProvider>
     </TaskProvider>
   </QueryClientProvider>
 );

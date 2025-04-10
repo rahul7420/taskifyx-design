@@ -2,7 +2,7 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { HomeIcon, ListIcon, PlusIcon, Settings } from "lucide-react";
+import { HomeIcon, ListIcon, PlusIcon, Settings, SprintIcon, ClipboardList } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface NavItem {
@@ -27,9 +27,14 @@ const Navbar: React.FC = () => {
       icon: <ListIcon className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
     {
-      path: "/add-task",
-      label: "Add",
-      icon: <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5" />,
+      path: "/sprints",
+      label: "Sprints",
+      icon: <SprintIcon className="h-4 w-4 sm:h-5 sm:w-5" />,
+    },
+    {
+      path: "/retrospectives",
+      label: "Retros",
+      icon: <ClipboardList className="h-4 w-4 sm:h-5 sm:w-5" />,
     },
     {
       path: "/settings",
@@ -43,10 +48,13 @@ const Navbar: React.FC = () => {
     return null;
   }
 
+  // For mobile, limit to 5 items
+  const displayItems = isMobile ? navItems.slice(0, 5) : navItems;
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-taskify-grey/20">
-      <div className="mx-auto flex h-14 sm:h-16 max-w-md items-center justify-around px-2 sm:px-4">
-        {navItems.map((item) => (
+      <div className="mx-auto flex h-14 sm:h-16 max-w-2xl items-center justify-around px-2 sm:px-4">
+        {displayItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
