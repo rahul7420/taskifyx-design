@@ -2,7 +2,8 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { HomeIcon, ListIcon, PlusIcon, Settings, SprintIcon, ClipboardList } from "lucide-react";
+import { HomeIcon, ListIcon, PlusIcon, Settings, ClipboardList } from "lucide-react";
+import SprintIcon from "../SprintIcon";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface NavItem {

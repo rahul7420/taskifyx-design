@@ -5,6 +5,8 @@ const SprintIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -13,10 +15,12 @@ const SprintIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => {
       strokeLinejoin="round"
       {...props}
     >
-      <circle cx="12" cy="12" r="10" />
-      <polyline points="12 6 12 12 16 14" />
-      <path d="M16.2 6.8a4 4 0 0 1 0 5.6" />
-      <path d="M17.8 4.2a8 8 0 0 1 0 10.6" />
+      <path d="M2 12h5" />
+      <path d="M17 12h5" />
+      <path d="M7 12a5 5 0 0 1 5-5" />
+      <path d="M17 12a5 5 0 0 0-5-5" />
+      <path d="M12 7v10" />
+      <path d="m9 17 3 3 3-3" />
     </svg>
   );
 };
