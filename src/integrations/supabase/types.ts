@@ -9,66 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      comments: {
-        Row: {
-          content: string
-          created_at: string | null
-          id: string
-          task_id: string | null
-          user_id: string | null
-        }
-        Insert: {
-          content: string
-          created_at?: string | null
-          id?: string
-          task_id?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          content?: string
-          created_at?: string | null
-          id?: string
-          task_id?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "comments_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "comments_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          created_at: string | null
-          full_name: string | null
-          id: string
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          id: string
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string | null
-          full_name?: string | null
-          id?: string
-        }
-        Relationships: []
-      }
       sprints: {
         Row: {
           created_at: string | null
@@ -77,7 +17,7 @@ export type Database = {
           end_date: string | null
           id: string
           start_date: string | null
-          title: string
+          title: string | null
         }
         Insert: {
           created_at?: string | null
@@ -86,7 +26,7 @@ export type Database = {
           end_date?: string | null
           id?: string
           start_date?: string | null
-          title: string
+          title?: string | null
         }
         Update: {
           created_at?: string | null
@@ -95,97 +35,65 @@ export type Database = {
           end_date?: string | null
           id?: string
           start_date?: string | null
-          title?: string
+          title?: string | null
         }
         Relationships: [
           {
             foreignKeyName: "sprints_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      task_assignments: {
-        Row: {
-          assigned_at: string | null
-          id: string
-          task_id: string | null
-          user_id: string | null
-        }
-        Insert: {
-          assigned_at?: string | null
-          id?: string
-          task_id?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          assigned_at?: string | null
-          id?: string
-          task_id?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "task_assignments_task_id_fkey"
-            columns: ["task_id"]
-            isOneToOne: false
-            referencedRelation: "tasks"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "task_assignments_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
       }
       tasks: {
         Row: {
+          assigned_to: string | null
           created_at: string | null
           created_by: string | null
+          deadline: string | null
           description: string | null
-          due_date: string | null
           id: string
-          priority: string | null
           sprint_id: string | null
           status: string | null
-          title: string
-          user_id: string | null
+          title: string | null
         }
         Insert: {
+          assigned_to?: string | null
           created_at?: string | null
           created_by?: string | null
+          deadline?: string | null
           description?: string | null
-          due_date?: string | null
           id?: string
-          priority?: string | null
           sprint_id?: string | null
           status?: string | null
-          title: string
-          user_id?: string | null
+          title?: string | null
         }
         Update: {
+          assigned_to?: string | null
           created_at?: string | null
           created_by?: string | null
+          deadline?: string | null
           description?: string | null
-          due_date?: string | null
           id?: string
-          priority?: string | null
           sprint_id?: string | null
           status?: string | null
-          title?: string
-          user_id?: string | null
+          title?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tasks_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
           {
@@ -196,6 +104,30 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      users: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
