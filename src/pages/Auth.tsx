@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowRight, Mail, Lock, AlertCircle } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const Auth: React.FC = () => {
@@ -17,7 +16,6 @@ const Auth: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { signIn, signUp } = useAuth();
-  const navigate = useNavigate();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +28,6 @@ const Auth: React.FC = () => {
       if (error) {
         setError(error.message);
         toast.error("Sign in failed");
-      } else {
-        navigate("/dashboard");
       }
     } catch (err) {
       setError("An unexpected error occurred");
@@ -58,8 +54,6 @@ const Auth: React.FC = () => {
       if (error) {
         setError(error.message);
         toast.error("Sign up failed");
-      } else {
-        toast.success("Account created! Please check your email to confirm your account.");
       }
     } catch (err) {
       setError("An unexpected error occurred");
