@@ -9,33 +9,123 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      profiles: {
+      sprints: {
+        Row: {
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          start_date: string | null
+          title: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          title?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          start_date?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sprints_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          assigned_to: string | null
+          created_at: string | null
+          created_by: string | null
+          deadline: string | null
+          description: string | null
+          id: string
+          sprint_id: string | null
+          status: string | null
+          title: string | null
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          sprint_id?: string | null
+          status?: string | null
+          title?: string | null
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deadline?: string | null
+          description?: string | null
+          id?: string
+          sprint_id?: string | null
+          status?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_assigned_to_fkey"
+            columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_sprint_id_fkey"
+            columns: ["sprint_id"]
+            isOneToOne: false
+            referencedRelation: "sprints"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
         Row: {
           avatar_url: string | null
           created_at: string | null
-          full_name: string | null
+          email: string | null
           id: string
-          role: string | null
-          updated_at: string | null
-          username: string | null
+          name: string | null
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string | null
-          full_name?: string | null
-          id: string
-          role?: string | null
-          updated_at?: string | null
-          username?: string | null
+          email?: string | null
+          id?: string
+          name?: string | null
         }
         Update: {
           avatar_url?: string | null
           created_at?: string | null
-          full_name?: string | null
+          email?: string | null
           id?: string
-          role?: string | null
-          updated_at?: string | null
-          username?: string | null
+          name?: string | null
         }
         Relationships: []
       }

@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { HomeIcon, ListIcon, PlusIcon, Settings, ClipboardList } from "lucide-react";
 import SprintIcon from "../SprintIcon";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuth } from "@/context/AuthContext";
 
 interface NavItem {
   path: string;
@@ -16,7 +15,6 @@ interface NavItem {
 const Navbar: React.FC = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { user } = useAuth();
   
   const navItems: NavItem[] = [
     {
@@ -46,11 +44,8 @@ const Navbar: React.FC = () => {
     },
   ];
 
-  // Public routes where navbar should be hidden
-  const publicRoutes = ['/', '/auth', '/auth-callback'];
-  
-  // Don't show navbar on public routes or when user is not authenticated
-  if (publicRoutes.includes(location.pathname) || !user) {
+  // Don't show navbar on splash or login pages
+  if (location.pathname === "/" || location.pathname === "/login") {
     return null;
   }
 
