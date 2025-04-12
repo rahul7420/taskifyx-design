@@ -8,12 +8,14 @@ interface AuthErrorPopupProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onTryAgain: () => void;
+  errorMessage?: string;
 }
 
 const AuthErrorPopup: React.FC<AuthErrorPopupProps> = ({
   open,
   onOpenChange,
   onTryAgain,
+  errorMessage = "Sign-in failed. Please try again.",
 }) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -27,7 +29,7 @@ const AuthErrorPopup: React.FC<AuthErrorPopupProps> = ({
         
         <div className="mt-4 flex flex-col items-center gap-6">
           <h2 className="text-center text-lg font-bold text-white">
-            Sign-in failed. Please try again.
+            {errorMessage}
           </h2>
           
           <Button
