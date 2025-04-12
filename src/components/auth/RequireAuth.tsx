@@ -1,14 +1,10 @@
 
 import React, { useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import LoadingScreen from "./LoadingScreen";
 
-interface RequireAuthProps {
-  children: React.ReactNode;
-}
-
-export const RequireAuth: React.FC<RequireAuthProps> = ({ children }) => {
+export const RequireAuth: React.FC = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,6 +12,7 @@ export const RequireAuth: React.FC<RequireAuthProps> = ({ children }) => {
   useEffect(() => {
     if (!loading && !user) {
       // Redirect to login page if not authenticated
+      console.log("Not authenticated, redirecting to auth page");
       navigate("/auth", { state: { from: location.pathname } });
     }
   }, [user, loading, navigate, location]);
@@ -24,5 +21,8 @@ export const RequireAuth: React.FC<RequireAuthProps> = ({ children }) => {
     return <LoadingScreen />;
   }
 
-  return user ? <>{children}</> : null;
+  // Only render the child routes if authenticated
+  return user ? <Outlet /> : null;
 };
+
+export default RequireAuth;

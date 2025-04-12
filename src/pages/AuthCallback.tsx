@@ -15,7 +15,9 @@ const AuthCallback: React.FC = () => {
         console.error("Error during auth callback:", error);
         navigate("/auth");
       } else {
-        navigate("/dashboard");
+        // Always redirect to dashboard on successful authentication
+        console.log("Auth callback successful, redirecting to dashboard");
+        navigate("/dashboard", { replace: true });
       }
     };
     

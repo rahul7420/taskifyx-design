@@ -12,6 +12,8 @@ import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import SplashScreen from "./components/splash/SplashScreen";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import RequireAuth from "./components/auth/RequireAuth";
+import PublicRoute from "./components/auth/PublicRoute";
 
 // Pages
 import Index from "./pages/Index";
@@ -28,7 +30,6 @@ import PrivacySettings from "./components/privacy/PrivacySettings";
 import NotificationSettings from "./components/notifications/NotificationSettings";
 import ProfileSettings from "./components/profile/ProfileSettings";
 import ProfileSettingsPage from "./components/profile/ProfileSettingsPage";
-import { RequireAuth } from "./components/auth/RequireAuth";
 
 const queryClient = new QueryClient();
 
@@ -56,21 +57,27 @@ const AnimationLayout = () => {
         <AnimatePresence mode="wait" initial={false}>
           <Routes location={location} key={location.pathname}>
             {/* Public routes */}
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
+            <Route element={<PublicRoute />}>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+            </Route>
+            
+            {/* Auth callback route (special case) */}
             <Route path="/auth-callback" element={<AuthCallback />} />
             
             {/* Protected routes */}
-            <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-            <Route path="/tasks" element={<RequireAuth><Tasks /></RequireAuth>} />
-            <Route path="/add-task" element={<RequireAuth><AddTask /></RequireAuth>} />
-            <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
-            <Route path="/sprints" element={<RequireAuth><SprintManagement /></RequireAuth>} />
-            <Route path="/retrospectives" element={<RequireAuth><SprintRetrospective /></RequireAuth>} />
-            <Route path="/settings/privacy" element={<RequireAuth><PrivacySettings /></RequireAuth>} />
-            <Route path="/settings/notifications" element={<RequireAuth><NotificationSettings /></RequireAuth>} />
-            <Route path="/settings/profile" element={<RequireAuth><ProfileSettings /></RequireAuth>} />
-            <Route path="/profile-settings" element={<RequireAuth><ProfileSettingsPage /></RequireAuth>} />
+            <Route element={<RequireAuth />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/add-task" element={<AddTask />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/sprints" element={<SprintManagement />} />
+              <Route path="/retrospectives" element={<SprintRetrospective />} />
+              <Route path="/settings/privacy" element={<PrivacySettings />} />
+              <Route path="/settings/notifications" element={<NotificationSettings />} />
+              <Route path="/settings/profile" element={<ProfileSettings />} />
+              <Route path="/profile-settings" element={<ProfileSettingsPage />} />
+            </Route>
             
             {/* 404 route */}
             <Route path="*" element={<NotFound />} />

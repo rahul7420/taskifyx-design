@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowRight, Mail, Lock, User } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
@@ -15,7 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { user, signIn, signUp, signInWithGoogle } = useAuth();
+  const { signIn, signUp, signInWithGoogle } = useAuth();
   
   // Login state
   const [email, setEmail] = useState("");
@@ -31,13 +30,6 @@ const Auth = () => {
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [activeTab, setActiveTab] = useState("login");
-
-  useEffect(() => {
-    // Redirect to dashboard if already authenticated
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,7 +48,7 @@ const Auth = () => {
         setShowError(true);
       } else {
         toast.success("Successfully signed in!");
-        navigate("/dashboard");
+        navigate("/dashboard", { replace: true });
       }
     } catch (error: any) {
       setErrorMessage(error.message || "An error occurred during sign in");
