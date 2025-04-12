@@ -1,6 +1,5 @@
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -17,12 +16,12 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const navigate = useNavigate();
-
+  const [initialized, setInitialized] = useState<boolean>(false);
+  
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -30,16 +29,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
         
-        if (event === 'SIGNED_IN') {
-          // Use setTimeout to avoid deadlock with Supabase auth
-          setTimeout(() => {
-            navigate('/dashboard');
-          }, 0);
-        } else if (event === 'SIGNED_OUT') {
-          // Use setTimeout to avoid deadlock with Supabase auth
-          setTimeout(() => {
-            navigate('/');
-          }, 0);
+        // Only handle navigation if we're initialized already
+        if (initialized) {
+          if (event === 'SIGNED_IN') {
+            // Use setTimeout to avoid deadlock with Supabase auth
+            setTimeout(() => {
+              window.location.href = '/dashboard';
+            }, 0);
+          } else if (event === 'SIGNED_OUT') {
+            // Use setTimeout to avoid deadlock with Supabase auth
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 0);
+          }
         }
       }
     );
@@ -49,10 +51,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
       setIsLoading(false);
+      setInitialized(true);
     });
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [initialized]);
 
   const signUp = async (email: string, password: string) => {
     try {
@@ -75,7 +80,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) throw error;
-      navigate('/dashboard');
     } catch (error: any) {
       toast({
         title: "Error",
@@ -116,18 +120,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const value = {
+    session,
+    user,
+    isLoading,
+    signIn,
+    signUp,
+    signOut,
+    googleSignIn,
+  };
+
   return (
-    <AuthContext.Provider
-      value={{
-        session,
-        user,
-        isLoading,
-        signIn,
-        signUp,
-        signOut,
-        googleSignIn,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
