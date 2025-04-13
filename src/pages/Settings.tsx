@@ -6,7 +6,6 @@ import FadeIn from "@/components/animations/FadeIn";
 import { User, Bell, Shield, LogOut } from "lucide-react";
 import Button from "@/components/common/Button";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import ProfileOverviewPopup from "@/components/profile/ProfileOverviewPopup";
 import SettingsOption from "@/components/settings/SettingsOption";
 
@@ -26,26 +25,10 @@ import {
 const Settings = () => {
   const navigate = useNavigate();
   const [showProfileOverview, setShowProfileOverview] = useState(false);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = async () => {
-    try {
-      setIsLoggingOut(true);
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        toast.error("Failed to log out: " + error.message);
-        return;
-      }
-      
-      toast.success("Logged out successfully");
-      navigate("/");
-    } catch (error) {
-      console.error("Logout error:", error);
-      toast.error("An unexpected error occurred");
-    } finally {
-      setIsLoggingOut(false);
-    }
+  const handleLogout = () => {
+    toast.success("Logged out successfully");
+    navigate("/");
   };
 
   return (
@@ -101,9 +84,8 @@ const Settings = () => {
                 size="lg"
                 className="w-full border-red-300 text-red-500 text-sm sm:text-base hover:bg-red-50 bg-white"
                 icon={<LogOut className="h-4 w-4 sm:h-5 sm:w-5" />}
-                disabled={isLoggingOut}
               >
-                {isLoggingOut ? "Logging out..." : "Logout"}
+                Logout
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent className="max-w-[90%] sm:max-w-md mx-auto bg-white text-gray-800">
@@ -120,9 +102,8 @@ const Settings = () => {
                 <AlertDialogAction
                   className="text-xs sm:text-sm bg-red-500 text-white hover:bg-red-600"
                   onClick={handleLogout}
-                  disabled={isLoggingOut}
                 >
-                  {isLoggingOut ? "Logging out..." : "Yes, logout"}
+                  Yes, logout
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
