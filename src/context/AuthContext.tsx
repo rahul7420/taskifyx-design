@@ -8,7 +8,7 @@ import { toast } from "sonner";
 interface AuthContextType {
   session: Session | null;
   user: User | null;
-  signUp: (email: string, password: string) => Promise<{
+  signUp: (email: string, password: string, options?: { data?: { first_name?: string; last_name?: string } }) => Promise<{
     error: Error | null;
     data: any;
   }>;
@@ -55,11 +55,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (email: string, password: string, options?: { data?: { first_name?: string; last_name?: string } }) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: options?.data || {}
+        }
       });
       
       if (!error && data?.user) {

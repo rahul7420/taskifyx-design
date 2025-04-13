@@ -17,7 +17,7 @@ import RequireAuth from "./components/auth/RequireAuth";
 import PublicRoute from "./components/auth/PublicRoute";
 
 // Pages
-import Auth from "./pages/Auth";
+import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import AddTask from "./pages/AddTask";
@@ -55,7 +55,8 @@ const AppRoutes = () => {
         <AnimatePresence mode="wait" initial={false}>
           <Routes>
             <Route element={<PublicRoute restricted={true} />}>
-              <Route path="/" element={<Auth />} />
+              <Route path="/" element={<AuthPage />} />
+              <Route path="/auth" element={<AuthPage />} />
             </Route>
             
             <Route element={<RequireAuth />}>
