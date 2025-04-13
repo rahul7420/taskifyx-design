@@ -2,7 +2,7 @@
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { HomeIcon, ListIcon, PlusIcon, Settings, ClipboardList, LogOut } from "lucide-react";
+import { HomeIcon, ListIcon, PlusIcon, Settings, ClipboardList } from "lucide-react";
 import SprintIcon from "../SprintIcon";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/context/AuthContext";
@@ -16,7 +16,7 @@ interface NavItem {
 const Navbar: React.FC = () => {
   const location = useLocation();
   const isMobile = useIsMobile();
-  const { signOut, user } = useAuth();
+  const { user } = useAuth();
   
   const navItems: NavItem[] = [
     {
@@ -87,18 +87,6 @@ const Navbar: React.FC = () => {
             )}
           </NavLink>
         ))}
-        
-        {user && (
-          <button
-            onClick={() => signOut()}
-            className="flex flex-col items-center justify-center rounded-md px-2 sm:px-3 py-1 sm:py-2 text-xs font-medium transition-colors text-taskify-darkgrey/60 hover:text-taskify-darkgrey"
-          >
-            <div className="mb-1 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full transition-all">
-              <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
-            </div>
-            <span className="text-[10px] sm:text-xs">Logout</span>
-          </button>
-        )}
       </div>
     </nav>
   );
