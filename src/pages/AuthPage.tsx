@@ -40,7 +40,8 @@ const AuthPage: React.FC = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { signIn } = useAuth();
+  const { signIn, signUp } = useAuth();
+  const [activeTab, setActiveTab] = useState<string>("login");
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -88,14 +89,10 @@ const AuthPage: React.FC = () => {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
-        options: {
-          data: {
-            first_name: data.firstName,
-            last_name: data.lastName,
-          }
+      const { error } = await signUp(data.email, data.password, {
+        data: {
+          first_name: data.firstName,
+          last_name: data.lastName,
         }
       });
       
@@ -104,8 +101,10 @@ const AuthPage: React.FC = () => {
         toast.error("Failed to create account");
       } else {
         toast.success("Account created successfully! Please check your email for verification.");
+        // Switch to login tab and pre-fill email
+        setActiveTab("login");
         loginForm.setValue("email", data.email);
-        loginForm.setValue("password", data.password);
+        signupForm.reset();
       }
     } catch (err) {
       setError("An unexpected error occurred");
@@ -129,7 +128,7 @@ const AuthPage: React.FC = () => {
             </CardDescription>
           </CardHeader>
           
-          <Tabs defaultValue="login" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid grid-cols-2 w-full">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>
@@ -139,7 +138,7 @@ const AuthPage: React.FC = () => {
               <CardContent className="px-4 pt-4 sm:px-6">
                 <Form {...loginForm}>
                   <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-3 sm:space-y-4">
-                    {error && (
+                    {error && activeTab === "login" && (
                       <Alert variant="destructive" className="py-2">
                         <AlertCircle className="h-4 w-4 mr-2" />
                         <AlertDescription>{error}</AlertDescription>
@@ -194,7 +193,7 @@ const AuthPage: React.FC = () => {
                       className="w-full text-sm h-9 sm:h-10" 
                       disabled={isLoading}
                     >
-                      {isLoading ? "Signing in..." : "Sign In"}
+                      {isLoading && activeTab === "login" ? "Signing in..." : "Sign In"}
                       {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
                     </Button>
                   </form>
@@ -206,7 +205,7 @@ const AuthPage: React.FC = () => {
               <CardContent className="px-4 pt-4 sm:px-6">
                 <Form {...signupForm}>
                   <form onSubmit={signupForm.handleSubmit(onSignup)} className="space-y-3 sm:space-y-4">
-                    {error && (
+                    {error && activeTab === "signup" && (
                       <Alert variant="destructive" className="py-2">
                         <AlertCircle className="h-4 w-4 mr-2" />
                         <AlertDescription>{error}</AlertDescription>
@@ -324,7 +323,7 @@ const AuthPage: React.FC = () => {
                       className="w-full text-sm h-9 sm:h-10" 
                       disabled={isLoading}
                     >
-                      {isLoading ? "Creating Account..." : "Create Account"}
+                      {isLoading && activeTab === "signup" ? "Creating Account..." : "Create Account"}
                       {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
                     </Button>
                   </form>

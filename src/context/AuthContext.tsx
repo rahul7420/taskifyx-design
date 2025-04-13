@@ -18,6 +18,7 @@ interface AuthContextType {
   }>;
   signOut: () => Promise<void>;
   loading: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -55,6 +56,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
+  const refreshUser = async () => {
+    const { data } = await supabase.auth.refreshSession();
+    setSession(data.session);
+    setUser(data.user);
+  };
+
   const signUp = async (email: string, password: string, options?: { data?: { first_name?: string; last_name?: string } }) => {
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -66,6 +73,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       
       if (!error && data?.user) {
+        // Create a profile entry in the profiles table
+        if (options?.data?.first_name || options?.data?.last_name) {
+          await supabase.from('profiles').upsert({
+            id: data.user.id,
+            first_name: options?.data?.first_name || '',
+            last_name: options?.data?.last_name || '',
+            updated_at: new Date().toISOString(),
+          });
+        }
+        
         toast.success("Account created! Please check your email to confirm your account.");
       }
       
@@ -102,7 +119,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, signUp, signIn, signOut, loading }}>
+    <AuthContext.Provider value={{ session, user, signUp, signIn, signOut, loading, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
