@@ -1,191 +1,376 @@
 
 import React, { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/context/AuthContext";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { ArrowRight, Mail, Lock, AlertCircle } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import FadeIn from "@/components/animations/FadeIn";
-import { toast } from "sonner";
+
+// Login Form Schema
+const loginSchema = z.object({
+  email: z.string().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+type LoginFormValues = z.infer<typeof loginSchema>;
+
+// Sign-up Form Schema
+const signUpSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Please enter a valid email address"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      "Password must contain uppercase, lowercase, and number"
+    ),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+});
+
+type SignUpFormValues = z.infer<typeof signUpSchema>;
 
 const Auth: React.FC = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { signIn, signUp } = useAuth();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("login");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
+  // Login form
+  const loginForm = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  // Sign-up form
+  const signUpForm = useForm<SignUpFormValues>({
+    resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  // Login submit handler
+  const onLoginSubmit = async (data: LoginFormValues) => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
     
     try {
-      const { error } = await signIn(email, password);
+      const { error, success } = await signIn(data.email, data.password);
       
-      if (error) {
-        setError(error.message);
-        toast.error("Sign in failed");
+      if (success) {
+        navigate("/dashboard");
+      } else if (error) {
+        setErrorMessage(error.message || "Failed to sign in");
       }
     } catch (err) {
-      setError("An unexpected error occurred");
-      toast.error("Sign in failed");
+      setErrorMessage("An unexpected error occurred");
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      setIsLoading(false);
-      return;
-    }
+  // Sign-up submit handler
+  const onSignUpSubmit = async (data: SignUpFormValues) => {
+    setIsSubmitting(true);
+    setErrorMessage(null);
     
     try {
-      const { error } = await signUp(email, password);
+      const { error, success } = await signUp(
+        data.email,
+        data.password,
+        data.firstName,
+        data.lastName
+      );
       
-      if (error) {
-        setError(error.message);
-        toast.error("Sign up failed");
+      if (success) {
+        // Switch to login tab after successful signup
+        setActiveTab("login");
+        signUpForm.reset();
+      } else if (error) {
+        setErrorMessage(error.message || "Failed to create account");
       }
     } catch (err) {
-      setError("An unexpected error occurred");
-      toast.error("Sign up failed");
+      setErrorMessage("An unexpected error occurred");
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-3 sm:p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <FadeIn direction="up" delay={100}>
-        <Card className="w-full max-w-sm sm:max-w-md shadow-lg">
-          <CardHeader className="space-y-1 px-4 pt-5 sm:px-6 sm:pt-6">
-            <div className="flex justify-center mb-2">
-              <img src="/taskify-logo.svg" alt="TaskifyX Logo" className="h-10 w-10 sm:h-12 sm:w-12" />
+        <Card className="w-full max-w-md shadow-lg">
+          <CardHeader className="space-y-1 px-6 pt-6">
+            <div className="flex justify-center mb-4">
+              <img src="/taskify-logo.svg" alt="TaskifyX Logo" className="h-12 w-12" />
             </div>
-            <CardTitle className="text-xl sm:text-2xl font-bold text-center">TaskifyX</CardTitle>
-            <CardDescription className="text-sm text-center">
-              Manage your tasks efficiently
+            <CardTitle className="text-2xl font-bold text-center">TaskifyX</CardTitle>
+            <CardDescription className="text-center">
+              {activeTab === "login" ? "Sign in to your account" : "Create a new account"}
             </CardDescription>
           </CardHeader>
           
-          <Tabs defaultValue="signin" className="w-full">
-            <TabsList className="grid grid-cols-2 w-full">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="signin">
-              <CardContent className="px-4 pt-4 sm:px-6">
-                <form onSubmit={handleSignIn} className="space-y-3 sm:space-y-4">
-                  {error && (
-                    <Alert variant="destructive" className="py-2">
-                      <AlertCircle className="h-4 w-4 mr-2" />
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-                  
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Mail className="absolute left-2 sm:left-3 top-2.5 sm:top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                      <Input 
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="pl-8 sm:pl-10 text-sm h-9 sm:h-10"
-                        required
+          <CardContent className="p-6 pt-4">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              </TabsList>
+              
+              {errorMessage && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertDescription>{errorMessage}</AlertDescription>
+                </Alert>
+              )}
+              
+              <TabsContent value="login">
+                <Form {...loginForm}>
+                  <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+                    <FormField
+                      control={loginForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="you@example.com"
+                              type="email"
+                              autoComplete="email"
+                              disabled={isSubmitting}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={loginForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                placeholder="••••••••"
+                                type={showPassword ? "text" : "password"}
+                                autoComplete="current-password"
+                                disabled={isSubmitting}
+                                {...field}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                              >
+                                {showPassword ? (
+                                  <EyeOff className="h-5 w-5" />
+                                ) : (
+                                  <Eye className="h-5 w-5" />
+                                )}
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Signing in...
+                        </>
+                      ) : (
+                        "Sign In"
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+              </TabsContent>
+              
+              <TabsContent value="signup">
+                <Form {...signUpForm}>
+                  <form onSubmit={signUpForm.handleSubmit(onSignUpSubmit)} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <FormField
+                        control={signUpForm.control}
+                        name="firstName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>First Name</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="John"
+                                disabled={isSubmitting}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      
+                      <FormField
+                        control={signUpForm.control}
+                        name="lastName"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Last Name</FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="Doe"
+                                disabled={isSubmitting}
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
                     </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Lock className="absolute left-2 sm:left-3 top-2.5 sm:top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                      <Input 
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="pl-8 sm:pl-10 text-sm h-9 sm:h-10"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full text-sm h-9 sm:h-10" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Signing In..." : "Sign In"}
-                    {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
-                  </Button>
-                </form>
-              </CardContent>
-            </TabsContent>
-            
-            <TabsContent value="signup">
-              <CardContent className="px-4 pt-4 sm:px-6">
-                <form onSubmit={handleSignUp} className="space-y-3 sm:space-y-4">
-                  {error && (
-                    <Alert variant="destructive" className="py-2">
-                      <AlertCircle className="h-4 w-4 mr-2" />
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
-                  
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Mail className="absolute left-2 sm:left-3 top-2.5 sm:top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                      <Input 
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="pl-8 sm:pl-10 text-sm h-9 sm:h-10"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="relative">
-                      <Lock className="absolute left-2 sm:left-3 top-2.5 sm:top-3 h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
-                      <Input 
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        className="pl-8 sm:pl-10 text-sm h-9 sm:h-10"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full text-sm h-9 sm:h-10" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Signing Up..." : "Sign Up"}
-                    {!isLoading && <ArrowRight className="ml-2 h-4 w-4" />}
-                  </Button>
-                </form>
-              </CardContent>
-            </TabsContent>
-          </Tabs>
+                    
+                    <FormField
+                      control={signUpForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              placeholder="you@example.com"
+                              type="email"
+                              autoComplete="email"
+                              disabled={isSubmitting}
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={signUpForm.control}
+                      name="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Password</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                placeholder="••••••••"
+                                type={showPassword ? "text" : "password"}
+                                autoComplete="new-password"
+                                disabled={isSubmitting}
+                                {...field}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                              >
+                                {showPassword ? (
+                                  <EyeOff className="h-5 w-5" />
+                                ) : (
+                                  <Eye className="h-5 w-5" />
+                                )}
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={signUpForm.control}
+                      name="confirmPassword"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Confirm Password</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                placeholder="••••••••"
+                                type={showConfirmPassword ? "text" : "password"}
+                                autoComplete="new-password"
+                                disabled={isSubmitting}
+                                {...field}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500"
+                              >
+                                {showConfirmPassword ? (
+                                  <EyeOff className="h-5 w-5" />
+                                ) : (
+                                  <Eye className="h-5 w-5" />
+                                )}
+                              </button>
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Creating account...
+                        </>
+                      ) : (
+                        "Create Account"
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
           
-          <CardFooter className="flex flex-col px-4 pb-5 pt-0 sm:px-6 sm:pb-6">
-            {/* Footer content if needed */}
+          <CardFooter className="flex flex-col p-6 pt-0">
+            <p className="text-xs text-center text-gray-500">
+              By continuing, you agree to our Terms of Service and Privacy Policy.
+            </p>
           </CardFooter>
         </Card>
       </FadeIn>
