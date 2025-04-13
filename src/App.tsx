@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TaskProvider } from "./context/TaskContext";
 import { SprintProvider } from "./context/SprintContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -12,12 +12,12 @@ import { AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import SplashScreen from "./components/splash/SplashScreen";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import AnimationLayout from "./components/animations/AnimationLayout";
 import RequireAuth from "./components/auth/RequireAuth";
 import PublicRoute from "./components/auth/PublicRoute";
 
 // Pages
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
+import AuthPage from "./pages/AuthPage";
 import Dashboard from "./pages/Dashboard";
 import Tasks from "./pages/Tasks";
 import AddTask from "./pages/AddTask";
@@ -33,8 +33,7 @@ import ProfileSettingsPage from "./components/profile/ProfileSettingsPage";
 const queryClient = new QueryClient();
 
 // AnimationLayout component to handle route transitions
-const AnimationLayout = () => {
-  const location = useLocation();
+const AppRoutes = () => {
   const [showSplash, setShowSplash] = useState(true);
   
   useEffect(() => {
@@ -54,19 +53,25 @@ const AnimationLayout = () => {
     <ScrollArea className="h-screen w-full">
       <div className="content-container">
         <AnimatePresence mode="wait" initial={false}>
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
-            <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-            <Route path="/tasks" element={<RequireAuth><Tasks /></RequireAuth>} />
-            <Route path="/add-task" element={<RequireAuth><AddTask /></RequireAuth>} />
-            <Route path="/settings" element={<RequireAuth><Settings /></RequireAuth>} />
-            <Route path="/sprints" element={<RequireAuth><SprintManagement /></RequireAuth>} />
-            <Route path="/retrospectives" element={<RequireAuth><SprintRetrospective /></RequireAuth>} />
-            <Route path="/settings/privacy" element={<RequireAuth><PrivacySettings /></RequireAuth>} />
-            <Route path="/settings/notifications" element={<RequireAuth><NotificationSettings /></RequireAuth>} />
-            <Route path="/settings/profile" element={<RequireAuth><ProfileSettings /></RequireAuth>} />
-            <Route path="/profile-settings" element={<RequireAuth><ProfileSettingsPage /></RequireAuth>} />
+          <Routes>
+            <Route element={<PublicRoute restricted={true} />}>
+              <Route path="/" element={<AuthPage />} />
+              <Route path="/auth" element={<AuthPage />} />
+            </Route>
+            
+            <Route element={<RequireAuth />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/tasks" element={<Tasks />} />
+              <Route path="/add-task" element={<AddTask />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/sprints" element={<SprintManagement />} />
+              <Route path="/retrospectives" element={<SprintRetrospective />} />
+              <Route path="/settings/privacy" element={<PrivacySettings />} />
+              <Route path="/settings/notifications" element={<NotificationSettings />} />
+              <Route path="/settings/profile" element={<ProfileSettings />} />
+              <Route path="/profile-settings" element={<ProfileSettingsPage />} />
+            </Route>
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
@@ -77,20 +82,20 @@ const AnimationLayout = () => {
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TaskProvider>
-        <SprintProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
-              <AnimationLayout />
+    <TaskProvider>
+      <SprintProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AuthProvider>
+              <AppRoutes />
               <Navbar />
-            </BrowserRouter>
-          </TooltipProvider>
-        </SprintProvider>
-      </TaskProvider>
-    </AuthProvider>
+            </AuthProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </SprintProvider>
+    </TaskProvider>
   </QueryClientProvider>
 );
 

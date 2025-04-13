@@ -1,45 +1,45 @@
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useState, useEffect, useContext, ReactNode } from "react";
 import { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 interface AuthContextType {
-  user: User | null;
   session: Session | null;
-  isLoading: boolean;
-  signUp: (email: string, password: string, firstName: string, lastName: string) => Promise<{
-    error: any | null;
-    success: boolean;
+  user: User | null;
+  signUp: (email: string, password: string, options?: { data?: { first_name?: string; last_name?: string } }) => Promise<{
+    error: Error | null;
+    data: any;
   }>;
   signIn: (email: string, password: string) => Promise<{
-    error: any | null;
-    success: boolean;
+    error: Error | null;
+    data: any;
   }>;
   signOut: () => Promise<void>;
+  loading: boolean;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ 
-  children 
-}) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, newSession) => {
-        setSession(newSession);
-        setUser(newSession?.user ?? null);
+      (event, currentSession) => {
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
         
         if (event === "SIGNED_IN") {
-          setIsLoading(false);
-        }
-        if (event === "SIGNED_OUT") {
-          setIsLoading(false);
+          toast.success("Signed in successfully");
+        } else if (event === "SIGNED_OUT") {
+          toast.success("Signed out successfully");
         }
       }
     );
@@ -48,37 +48,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       setSession(currentSession);
       setUser(currentSession?.user ?? null);
-      setIsLoading(false);
+      setLoading(false);
     });
 
     return () => {
-      subscription.unsubscribe();
+      subscription?.unsubscribe();
     };
   }, []);
 
-  const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
+  const refreshUser = async () => {
+    const { data } = await supabase.auth.refreshSession();
+    setSession(data.session);
+    setUser(data.user);
+  };
+
+  const signUp = async (email: string, password: string, options?: { data?: { first_name?: string; last_name?: string } }) => {
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName
-          }
+          data: options?.data || {}
         }
       });
-
-      if (error) {
-        toast.error(error.message);
-        return { error, success: false };
+      
+      if (!error && data?.user) {
+        // Create a profile entry in the profiles table
+        if (options?.data?.first_name || options?.data?.last_name) {
+          await supabase.from('profiles').upsert({
+            id: data.user.id,
+            first_name: options?.data?.first_name || '',
+            last_name: options?.data?.last_name || '',
+            updated_at: new Date().toISOString(),
+          });
+        }
+        
+        toast.success("Account created! Please check your email to confirm your account.");
       }
-
-      toast.success("Account created successfully! Please check your email for verification.");
-      return { error: null, success: true };
+      
+      return { data, error };
     } catch (error) {
-      toast.error("An unexpected error occurred. Please try again.");
-      return { error, success: false };
+      return { data: null, error: error as Error };
     }
   };
 
@@ -88,47 +98,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         email,
         password,
       });
-
-      if (error) {
-        toast.error(error.message);
-        return { error, success: false };
+      
+      if (!error) {
+        navigate('/dashboard');
       }
-
-      toast.success("Signed in successfully!");
-      return { error: null, success: true };
+      
+      return { data, error };
     } catch (error) {
-      toast.error("An unexpected error occurred. Please try again.");
-      return { error, success: false };
+      return { data: null, error: error as Error };
     }
   };
 
   const signOut = async () => {
     try {
       await supabase.auth.signOut();
-      toast.success("Signed out successfully!");
+      navigate("/");
     } catch (error) {
-      toast.error("Error signing out");
       console.error("Error signing out:", error);
     }
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        session,
-        isLoading,
-        signUp,
-        signIn,
-        signOut,
-      }}
-    >
+    <AuthContext.Provider value={{ session, user, signUp, signIn, signOut, loading, refreshUser }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = (): AuthContextType => {
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");

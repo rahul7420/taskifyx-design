@@ -1,26 +1,18 @@
 
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import LoadingScreen from "@/components/auth/LoadingScreen";
 
-interface RequireAuthProps {
-  children: React.ReactNode;
-}
-
-const RequireAuth: React.FC<RequireAuthProps> = ({ children }) => {
-  const { user, isLoading } = useAuth();
+const RequireAuth: React.FC = () => {
+  const { user, loading } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
+  if (loading) {
     return <LoadingScreen />;
   }
 
-  if (!user) {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
-  }
-
-  return <>{children}</>;
+  return user ? <Outlet /> : <Navigate to="/auth" state={{ from: location }} replace />;
 };
 
 export default RequireAuth;
