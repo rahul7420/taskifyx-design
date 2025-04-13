@@ -11,7 +11,6 @@ interface NavItem {
   label: string;
   icon: React.ReactNode;
   showWhenAuth?: boolean;
-  action?: () => Promise<void> | void;
 }
 
 const Navbar: React.FC = () => {
@@ -52,32 +51,40 @@ const Navbar: React.FC = () => {
     },
   ];
 
-  const logoutItem: NavItem = {
+  // Logout item (not a route)
+  const logoutItem = {
     path: "#",
     label: "Logout",
     icon: <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />,
     action: signOut,
   };
 
+  // Don't show navbar on splash or login pages
   if (location.pathname === "/") {
     return null;
   }
 
+  // Filter items based on auth status
   const filteredItems = navItems.filter(item => {
     if (item.showWhenAuth === undefined) return true;
     return item.showWhenAuth === !!user;
   });
 
+  // For mobile, limit to 5 items
   const displayItems = isMobile ? filteredItems.slice(0, 4) : filteredItems;
   
+  // Add logout for authenticated users
   if (user) {
     if (isMobile && displayItems.length >= 4) {
+      // If we already have 4 items on mobile, replace the last one with logout
       displayItems[displayItems.length - 1] = logoutItem;
     } else {
+      // Otherwise just add the logout item
       displayItems.push(logoutItem);
     }
   }
 
+  // If no user and no items to display, don't render navbar
   if (displayItems.length === 0) {
     return null;
   }
