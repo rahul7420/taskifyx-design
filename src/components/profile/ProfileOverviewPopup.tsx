@@ -5,9 +5,6 @@ import { X, LogOut } from "lucide-react";
 import Button from "@/components/common/Button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useUserProfile } from "@/hooks/useUserProfile";
-import { useAuth } from "@/context/AuthContext";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileOverviewPopupProps {
   open: boolean;
@@ -19,17 +16,26 @@ const ProfileOverviewPopup: React.FC<ProfileOverviewPopupProps> = ({
   onOpenChange,
 }) => {
   const navigate = useNavigate();
-  const { profile, getDisplayName, getAvatarInitial } = useUserProfile();
-  const { signOut } = useAuth();
+  const [userData, setUserData] = React.useState<any>(null);
   
+  React.useEffect(() => {
+    // Get user data from localStorage when popup opens
+    if (open) {
+      const user = localStorage.getItem("user");
+      if (user) {
+        setUserData(JSON.parse(user));
+      }
+    }
+  }, [open]);
+
   const handleViewProfile = () => {
     onOpenChange(false);
-    navigate("/profile-settings");
+    navigate("/settings");
     toast.info("Navigating to profile settings");
   };
 
-  const handleLogout = async () => {
-    await signOut();
+  const handleLogout = () => {
+    localStorage.removeItem("user");
     toast.success("Logged out successfully");
     navigate("/");
   };
@@ -45,14 +51,16 @@ const ProfileOverviewPopup: React.FC<ProfileOverviewPopupProps> = ({
         </button>
 
         <div className="mt-8 flex flex-col items-center gap-4">
-          <Avatar className="w-[90px] h-[90px] border-2 border-white shadow-md">
-            <AvatarImage src={profile?.avatar_url || ""} />
-            <AvatarFallback className="bg-purple-700 text-white text-3xl font-bold">
-              {getAvatarInitial()}
-            </AvatarFallback>
-          </Avatar>
+          <div className="w-[90px] h-[90px] rounded-full bg-gray-200 overflow-hidden">
+            <img
+              src={userData?.profilePicture || "https://ui-avatars.com/api/?name=User&background=random"}
+              alt="Profile"
+              className="w-full h-full object-cover"
+            />
+          </div>
 
-          <h2 className="text-xl font-bold">{getDisplayName()}</h2>
+          <h2 className="text-xl font-bold">{userData?.name || "User"}</h2>
+          <p className="text-[#9E9E9E] text-sm">{userData?.email || "user@example.com"}</p>
         </div>
 
         <div className="mt-auto w-full space-y-4">

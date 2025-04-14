@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,6 @@ import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import FadeIn from "@/components/animations/FadeIn";
 import Transition from "@/components/animations/Transition";
-import { useUserProfile } from "@/hooks/useUserProfile";
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -30,30 +29,61 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useAuth } from "@/context/AuthContext";
+
+interface UserProfile {
+  name: string;
+  email: string;
+  phone: string;
+  bio: string;
+  profilePicture: string;
+}
 
 const ProfileSettingsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { profile, isLoading, getDisplayName, getAvatarInitial } = useUserProfile();
-  const { signOut } = useAuth();
-  
+  const [user, setUser] = useState<UserProfile>({
+    name: "Alex Johnson",
+    email: "alex.johnson@example.com",
+    phone: "+1 234 567 8901",
+    bio: "Product designer and developer based in San Francisco.",
+    profilePicture: "https://ui-avatars.com/api/?name=Alex+Johnson&background=random",
+  });
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Here you would upload to Supabase storage
-      toast.info("File upload functionality coming soon");
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target?.result) {
+          setUser({
+            ...user,
+            profilePicture: event.target.result as string
+          });
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleSaveChanges = () => {
+    localStorage.setItem("user", JSON.stringify(user));
     toast.success("Profile updated successfully!");
   };
 
-  const handleLogout = async () => {
-    await signOut();
+  const handleLogout = () => {
     toast.success("Logged out successfully");
     navigate("/");
   };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        setUser({ ...user, ...JSON.parse(storedUser) });
+      } catch (error) {
+        console.error("Failed to parse stored user data:", error);
+      }
+    }
+  }, []);
 
   const navigateBack = () => {
     navigate(-1);
@@ -81,8 +111,8 @@ const ProfileSettingsPage: React.FC = () => {
               <div className="flex justify-center mb-6">
                 <div className="relative">
                   <Avatar className="w-24 h-24 border-4 border-white shadow-md">
-                    <AvatarImage src={profile?.avatar_url || ""} />
-                    <AvatarFallback>{getAvatarInitial()}</AvatarFallback>
+                    <AvatarImage src={user.profilePicture} alt={user.name} />
+                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <label htmlFor="profile-picture" className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer hover:bg-blue-600 transition-colors">
                     <Upload className="h-4 w-4" />
@@ -100,13 +130,52 @@ const ProfileSettingsPage: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Username
+                    Full Name
                   </label>
                   <Input
-                    value={profile?.username || ""}
+                    value={user.name}
+                    onChange={(e) => setUser({ ...user, name: e.target.value })}
+                    className="w-full"
+                    placeholder="Enter your name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address
+                  </label>
+                  <Input
+                    value={user.email}
                     readOnly
-                    className="w-full bg-gray-50"
-                    placeholder="Your username"
+                    className="w-full bg-gray-50 cursor-not-allowed"
+                    placeholder="Your email (Google Sign-in)"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    This email is linked to your Google account and cannot be changed.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number
+                  </label>
+                  <Input
+                    value={user.phone}
+                    onChange={(e) => setUser({ ...user, phone: e.target.value })}
+                    className="w-full"
+                    placeholder="Enter your phone number"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bio
+                  </label>
+                  <Textarea
+                    value={user.bio}
+                    onChange={(e) => setUser({ ...user, bio: e.target.value })}
+                    className="w-full min-h-[100px]"
+                    placeholder="Tell us about yourself"
                   />
                 </div>
               </div>
