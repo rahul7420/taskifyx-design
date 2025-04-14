@@ -6,10 +6,10 @@ import { toast } from 'sonner';
 
 export interface UserProfile {
   id: string;
-  first_name: string | null;
-  last_name: string | null;
-  avatar_url: string | null;
   username: string | null;
+  avatar_url: string | null;
+  bio: string | null;
+  role: string | null;
 }
 
 export const useUserProfile = () => {
@@ -31,7 +31,7 @@ export const useUserProfile = () => {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, first_name, last_name, username, avatar_url')
+          .select('id, username, avatar_url, bio, role')
           .eq('id', user.id)
           .single();
 
@@ -54,16 +54,11 @@ export const useUserProfile = () => {
     fetchUserProfile();
   }, [user]);
 
-  // Format the full name with fallbacks
+  // Format the display name with fallbacks
   const getFullName = () => {
     if (!profile) return 'User';
     
-    const firstName = profile.first_name || '';
-    const lastName = profile.last_name || '';
-    
-    if (firstName || lastName) {
-      return `${firstName} ${lastName}`.trim();
-    } else if (profile.username) {
+    if (profile.username) {
       return profile.username;
     } else {
       return 'User';
