@@ -61,6 +61,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         password,
       });
+      
+      if (!error && data?.user) {
+        toast.success("Account created! Please check your email to confirm your account.");
+      }
+      
       return { data, error };
     } catch (error) {
       return { data: null, error: error as Error };
@@ -73,6 +78,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         email,
         password,
       });
+      
+      if (!error) {
+        navigate('/dashboard');
+      }
+      
       return { data, error };
     } catch (error) {
       return { data: null, error: error as Error };
