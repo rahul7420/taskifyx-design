@@ -37,8 +37,8 @@ const Dashboard = () => {
     return new Date().toLocaleDateString('en-US', options);
   };
 
-  const handleAvatarClick = () => {
-    setShowProfilePopup(true);
+  const handleProfileClick = () => {
+    navigate("/profile-settings");
   };
 
   return (
@@ -55,14 +55,14 @@ const Dashboard = () => {
           <FadeIn direction="down">
             <button 
               className="flex items-center gap-2"
-              onClick={handleAvatarClick}
+              onClick={handleProfileClick}
             >
               <span className="text-sm font-medium text-taskify-darkgrey hidden sm:inline-block">
                 {isLoading ? 'Loading...' : getDisplayName()}
               </span>
               <Avatar className="h-10 w-10 cursor-pointer border border-white shadow-sm">
                 <AvatarImage src={profile?.avatar_url || ""} />
-                <AvatarFallback className="bg-purple-700 text-white font-bold">
+                <AvatarFallback className="bg-[#9b87f5] text-white font-bold">
                   {getAvatarInitial()}
                 </AvatarFallback>
               </Avatar>

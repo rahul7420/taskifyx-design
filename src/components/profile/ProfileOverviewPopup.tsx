@@ -47,7 +47,7 @@ const ProfileOverviewPopup: React.FC<ProfileOverviewPopupProps> = ({
         <div className="mt-8 flex flex-col items-center gap-4">
           <Avatar className="w-[90px] h-[90px] border-2 border-white shadow-md">
             <AvatarImage src={profile?.avatar_url || ""} />
-            <AvatarFallback className="bg-purple-700 text-white text-3xl font-bold">
+            <AvatarFallback className="bg-[#9b87f5] text-white text-3xl font-bold">
               {getAvatarInitial()}
             </AvatarFallback>
           </Avatar>
