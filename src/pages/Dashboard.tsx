@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import FadeIn from "@/components/animations/FadeIn";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ProfileOverviewPopup from "@/components/profile/ProfileOverviewPopup";
-import { useUserProfile } from "@/hooks/useUserProfile";
 
 interface UserData {
   name: string;
@@ -19,14 +18,21 @@ interface UserData {
 const Dashboard = () => {
   const { getTasksByStatus, getUpcomingTasks } = useTaskContext();
   const navigate = useNavigate();
+  const [user, setUser] = useState<UserData | null>(null);
   const [showProfilePopup, setShowProfilePopup] = useState(false);
-  const { profile, isLoading, getFullName } = useUserProfile();
   
   const todoTasks = getTasksByStatus("todo");
   const inProgressTasks = getTasksByStatus("inprogress");
   const completedTasks = getTasksByStatus("completed");
   const upcomingTasks = getUpcomingTasks(7); // Tasks due in the next 7 days
   
+  useEffect(() => {
+    const userData = localStorage.getItem("user");
+    if (userData) {
+      setUser(JSON.parse(userData));
+    }
+  }, []);
+
   const getCurrentDate = () => {
     const options: Intl.DateTimeFormatOptions = { 
       weekday: 'long', 
@@ -57,12 +63,14 @@ const Dashboard = () => {
               className="flex items-center gap-2"
               onClick={handleProfileClick}
             >
-              <span className="text-sm font-medium text-taskify-darkgrey hidden sm:inline-block">
-                {isLoading ? 'Loading...' : getFullName()}
-              </span>
+              {user?.name && (
+                <span className="text-sm font-medium text-taskify-darkgrey hidden sm:inline-block">
+                  {user.name.split(' ')[0]}
+                </span>
+              )}
               <Avatar className="h-10 w-10 cursor-pointer border border-white shadow-sm">
-                <AvatarImage src={profile?.avatar_url || "https://ui-avatars.com/api/?name=User&background=random"} />
-                <AvatarFallback>{getFullName().charAt(0)}</AvatarFallback>
+                <AvatarImage src={user?.profilePicture || "https://ui-avatars.com/api/?name=User&background=random"} />
+                <AvatarFallback>U</AvatarFallback>
               </Avatar>
             </button>
           </FadeIn>
