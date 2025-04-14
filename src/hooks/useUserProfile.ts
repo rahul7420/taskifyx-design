@@ -6,10 +6,8 @@ import { toast } from 'sonner';
 
 export interface UserProfile {
   id: string;
-  first_name: string | null;
-  last_name: string | null;
-  avatar_url: string | null;
   username: string | null;
+  avatar_url: string | null;
 }
 
 export const useUserProfile = () => {
@@ -31,7 +29,7 @@ export const useUserProfile = () => {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, first_name, last_name, username, avatar_url')
+          .select('id, username, avatar_url')
           .eq('id', user.id)
           .single();
 
@@ -54,26 +52,23 @@ export const useUserProfile = () => {
     fetchUserProfile();
   }, [user]);
 
-  // Format the full name with fallbacks
-  const getFullName = () => {
+  // Format the display name with fallbacks
+  const getDisplayName = () => {
     if (!profile) return 'User';
-    
-    const firstName = profile.first_name || '';
-    const lastName = profile.last_name || '';
-    
-    if (firstName || lastName) {
-      return `${firstName} ${lastName}`.trim();
-    } else if (profile.username) {
-      return profile.username;
-    } else {
-      return 'User';
-    }
+    return profile.username || 'User';
+  };
+
+  // Get the avatar initial (first letter of username)
+  const getAvatarInitial = () => {
+    if (!profile || !profile.username) return 'U';
+    return profile.username.charAt(0).toUpperCase();
   };
 
   return {
     profile,
     isLoading,
     error,
-    getFullName
+    getDisplayName,
+    getAvatarInitial
   };
 };

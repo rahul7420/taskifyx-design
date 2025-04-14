@@ -5,6 +5,9 @@ import { X, LogOut } from "lucide-react";
 import Button from "@/components/common/Button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { useAuth } from "@/context/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileOverviewPopupProps {
   open: boolean;
@@ -16,26 +19,17 @@ const ProfileOverviewPopup: React.FC<ProfileOverviewPopupProps> = ({
   onOpenChange,
 }) => {
   const navigate = useNavigate();
-  const [userData, setUserData] = React.useState<any>(null);
+  const { profile, getDisplayName, getAvatarInitial } = useUserProfile();
+  const { signOut } = useAuth();
   
-  React.useEffect(() => {
-    // Get user data from localStorage when popup opens
-    if (open) {
-      const user = localStorage.getItem("user");
-      if (user) {
-        setUserData(JSON.parse(user));
-      }
-    }
-  }, [open]);
-
   const handleViewProfile = () => {
     onOpenChange(false);
-    navigate("/settings");
+    navigate("/profile-settings");
     toast.info("Navigating to profile settings");
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
+  const handleLogout = async () => {
+    await signOut();
     toast.success("Logged out successfully");
     navigate("/");
   };
@@ -51,16 +45,14 @@ const ProfileOverviewPopup: React.FC<ProfileOverviewPopupProps> = ({
         </button>
 
         <div className="mt-8 flex flex-col items-center gap-4">
-          <div className="w-[90px] h-[90px] rounded-full bg-gray-200 overflow-hidden">
-            <img
-              src={userData?.profilePicture || "https://ui-avatars.com/api/?name=User&background=random"}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <Avatar className="w-[90px] h-[90px] border-2 border-white shadow-md">
+            <AvatarImage src={profile?.avatar_url || ""} />
+            <AvatarFallback className="bg-[#9b87f5] text-white text-3xl font-bold">
+              {getAvatarInitial()}
+            </AvatarFallback>
+          </Avatar>
 
-          <h2 className="text-xl font-bold">{userData?.name || "User"}</h2>
-          <p className="text-[#9E9E9E] text-sm">{userData?.email || "user@example.com"}</p>
+          <h2 className="text-xl font-bold">{getDisplayName()}</h2>
         </div>
 
         <div className="mt-auto w-full space-y-4">
