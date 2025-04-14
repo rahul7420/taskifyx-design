@@ -20,7 +20,7 @@ const Dashboard = () => {
   const { getTasksByStatus, getUpcomingTasks } = useTaskContext();
   const navigate = useNavigate();
   const [showProfilePopup, setShowProfilePopup] = useState(false);
-  const { profile, isLoading, getDisplayName, getAvatarInitial } = useUserProfile();
+  const { profile, isLoading, getFullName } = useUserProfile();
   
   const todoTasks = getTasksByStatus("todo");
   const inProgressTasks = getTasksByStatus("inprogress");
@@ -58,13 +58,11 @@ const Dashboard = () => {
               onClick={handleProfileClick}
             >
               <span className="text-sm font-medium text-taskify-darkgrey hidden sm:inline-block">
-                {isLoading ? 'Loading...' : getDisplayName()}
+                {isLoading ? 'Loading...' : getFullName()}
               </span>
               <Avatar className="h-10 w-10 cursor-pointer border border-white shadow-sm">
-                <AvatarImage src={profile?.avatar_url || ""} />
-                <AvatarFallback className="bg-[#9b87f5] text-white font-bold">
-                  {getAvatarInitial()}
-                </AvatarFallback>
+                <AvatarImage src={profile?.avatar_url || "https://ui-avatars.com/api/?name=User&background=random"} />
+                <AvatarFallback>{getFullName().charAt(0)}</AvatarFallback>
               </Avatar>
             </button>
           </FadeIn>

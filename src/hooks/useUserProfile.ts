@@ -8,6 +8,8 @@ export interface UserProfile {
   id: string;
   username: string | null;
   avatar_url: string | null;
+  bio: string | null;
+  role: string | null;
 }
 
 export const useUserProfile = () => {
@@ -29,7 +31,7 @@ export const useUserProfile = () => {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, username, avatar_url')
+          .select('id, username, avatar_url, bio, role')
           .eq('id', user.id)
           .single();
 
@@ -53,22 +55,20 @@ export const useUserProfile = () => {
   }, [user]);
 
   // Format the display name with fallbacks
-  const getDisplayName = () => {
+  const getFullName = () => {
     if (!profile) return 'User';
-    return profile.username || 'User';
-  };
-
-  // Get the avatar initial (first letter of username)
-  const getAvatarInitial = () => {
-    if (!profile || !profile.username) return 'U';
-    return profile.username.charAt(0).toUpperCase();
+    
+    if (profile.username) {
+      return profile.username;
+    } else {
+      return 'User';
+    }
   };
 
   return {
     profile,
     isLoading,
     error,
-    getDisplayName,
-    getAvatarInitial
+    getFullName
   };
 };
