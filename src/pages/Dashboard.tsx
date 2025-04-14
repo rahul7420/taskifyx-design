@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Card from "@/components/common/Card";
 import { useTaskContext } from "@/context/TaskContext";
 import { Calendar, List, CheckCheck, Clock } from "lucide-react";
@@ -10,17 +10,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ProfileOverviewPopup from "@/components/profile/ProfileOverviewPopup";
 import { useUserProfile } from "@/hooks/useUserProfile";
 
-interface UserData {
-  name: string;
-  email: string;
-  profilePicture: string;
-}
-
 const Dashboard = () => {
   const { getTasksByStatus, getUpcomingTasks } = useTaskContext();
   const navigate = useNavigate();
   const [showProfilePopup, setShowProfilePopup] = useState(false);
-  const { profile, isLoading, getFullName } = useUserProfile();
+  const { getFullName, getAvatarCharacter, getAvatarUrl, isLoading } = useUserProfile();
   
   const todoTasks = getTasksByStatus("todo");
   const inProgressTasks = getTasksByStatus("inprogress");
@@ -38,7 +32,7 @@ const Dashboard = () => {
   };
 
   const handleProfileClick = () => {
-    navigate("/profile-settings");
+    setShowProfilePopup(true);
   };
 
   return (
@@ -60,9 +54,13 @@ const Dashboard = () => {
               <span className="text-sm font-medium text-taskify-darkgrey hidden sm:inline-block">
                 {isLoading ? 'Loading...' : getFullName()}
               </span>
-              <Avatar className="h-10 w-10 cursor-pointer border border-white shadow-sm">
-                <AvatarImage src={profile?.avatar_url || "https://ui-avatars.com/api/?name=User&background=random"} />
-                <AvatarFallback>{getFullName().charAt(0)}</AvatarFallback>
+              <Avatar className="h-10 w-10 cursor-pointer border border-white shadow-sm bg-purple-700">
+                {getAvatarUrl() ? (
+                  <AvatarImage src={getAvatarUrl() || ""} alt="Profile" className="object-cover" />
+                ) : null}
+                <AvatarFallback className="bg-purple-700 text-white text-lg font-bold">
+                  {getAvatarCharacter()}
+                </AvatarFallback>
               </Avatar>
             </button>
           </FadeIn>

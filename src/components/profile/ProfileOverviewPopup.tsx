@@ -5,6 +5,8 @@ import { X, LogOut } from "lucide-react";
 import Button from "@/components/common/Button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { useUserProfile } from "@/hooks/useUserProfile";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileOverviewPopupProps {
   open: boolean;
@@ -16,21 +18,11 @@ const ProfileOverviewPopup: React.FC<ProfileOverviewPopupProps> = ({
   onOpenChange,
 }) => {
   const navigate = useNavigate();
-  const [userData, setUserData] = React.useState<any>(null);
-  
-  React.useEffect(() => {
-    // Get user data from localStorage when popup opens
-    if (open) {
-      const user = localStorage.getItem("user");
-      if (user) {
-        setUserData(JSON.parse(user));
-      }
-    }
-  }, [open]);
+  const { profile, getFullName, getAvatarCharacter, getAvatarUrl } = useUserProfile();
 
   const handleViewProfile = () => {
     onOpenChange(false);
-    navigate("/settings");
+    navigate("/profile-settings");
     toast.info("Navigating to profile settings");
   };
 
@@ -51,16 +43,17 @@ const ProfileOverviewPopup: React.FC<ProfileOverviewPopupProps> = ({
         </button>
 
         <div className="mt-8 flex flex-col items-center gap-4">
-          <div className="w-[90px] h-[90px] rounded-full bg-gray-200 overflow-hidden">
-            <img
-              src={userData?.profilePicture || "https://ui-avatars.com/api/?name=User&background=random"}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <Avatar className="w-[90px] h-[90px] border-4 border-white shadow-md bg-purple-700">
+            {getAvatarUrl() ? (
+              <AvatarImage src={getAvatarUrl() || ""} alt="Profile" className="object-cover" />
+            ) : null}
+            <AvatarFallback className="bg-purple-700 text-white text-3xl font-bold">
+              {getAvatarCharacter()}
+            </AvatarFallback>
+          </Avatar>
 
-          <h2 className="text-xl font-bold">{userData?.name || "User"}</h2>
-          <p className="text-[#9E9E9E] text-sm">{userData?.email || "user@example.com"}</p>
+          <h2 className="text-xl font-bold">{getFullName()}</h2>
+          <p className="text-[#9E9E9E] text-sm">{profile?.bio || "No bio yet"}</p>
         </div>
 
         <div className="mt-auto w-full space-y-4">
