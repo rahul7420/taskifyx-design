@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { TaskProvider } from "./context/TaskContext";
 import { SprintProvider } from "./context/SprintContext";
 import { AuthProvider } from "./context/AuthContext";
@@ -34,7 +34,6 @@ const queryClient = new QueryClient();
 
 // AnimationLayout component to handle route transitions
 const AnimationLayout = () => {
-  const location = useLocation();
   const [showSplash, setShowSplash] = useState(true);
   
   useEffect(() => {
@@ -54,7 +53,7 @@ const AnimationLayout = () => {
     <ScrollArea className="h-screen w-full">
       <div className="content-container">
         <AnimatePresence mode="wait" initial={false}>
-          <Routes location={location} key={location.pathname}>
+          <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<PublicRoute><Auth /></PublicRoute>} />
             <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
@@ -71,6 +70,7 @@ const AnimationLayout = () => {
           </Routes>
         </AnimatePresence>
       </div>
+      <Navbar />
     </ScrollArea>
   );
 };
@@ -85,7 +85,6 @@ const App = () => (
             <Sonner />
             <BrowserRouter>
               <AnimationLayout />
-              <Navbar />
             </BrowserRouter>
           </TooltipProvider>
         </SprintProvider>
