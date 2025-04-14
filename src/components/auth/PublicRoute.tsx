@@ -1,21 +1,25 @@
 
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import LoadingScreen from "@/components/auth/LoadingScreen";
 
 interface PublicRouteProps {
-  restricted?: boolean;
+  children: React.ReactNode;
 }
 
-const PublicRoute: React.FC<PublicRouteProps> = ({ restricted = false }) => {
-  const { user, loading } = useAuth();
+const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
+  const { user, isLoading } = useAuth();
 
-  if (loading) {
+  if (isLoading) {
     return <LoadingScreen />;
   }
 
-  return (user && restricted) ? <Navigate to="/dashboard" replace /> : <Outlet />;
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <>{children}</>;
 };
 
 export default PublicRoute;
