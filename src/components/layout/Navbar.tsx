@@ -1,3 +1,4 @@
+
 import React from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -11,6 +12,7 @@ interface NavItem {
   label: string;
   icon: React.ReactNode;
   showWhenAuth?: boolean;
+  action?: () => void; // Add the missing action property
 }
 
 const Navbar: React.FC = () => {
@@ -52,7 +54,7 @@ const Navbar: React.FC = () => {
   ];
 
   // Logout item (not a route)
-  const logoutItem = {
+  const logoutItem: NavItem = {
     path: "#",
     label: "Logout",
     icon: <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />,
