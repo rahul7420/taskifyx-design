@@ -12,7 +12,7 @@ const RequireAuth: React.FC = () => {
     return <LoadingScreen />;
   }
 
-  return user ? <Outlet /> : <Navigate to="/auth" state={{ from: location }} replace />;
+  return user ? <Outlet /> : <Navigate to="/" state={{ from: location }} replace />;
 };
 
 export default RequireAuth;
