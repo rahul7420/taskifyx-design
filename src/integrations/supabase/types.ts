@@ -156,6 +156,7 @@ export type Database = {
           id: string
           role: string | null
           updated_at: string | null
+          user_id: string | null
           username: string | null
         }
         Insert: {
@@ -167,6 +168,7 @@ export type Database = {
           id: string
           role?: string | null
           updated_at?: string | null
+          user_id?: string | null
           username?: string | null
         }
         Update: {
@@ -178,6 +180,7 @@ export type Database = {
           id?: string
           role?: string | null
           updated_at?: string | null
+          user_id?: string | null
           username?: string | null
         }
         Relationships: []
@@ -214,45 +217,6 @@ export type Database = {
           },
           {
             foreignKeyName: "ratings_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      usage_logs: {
-        Row: {
-          ai_model_id: string | null
-          created_at: string | null
-          id: string
-          tokens_used: number | null
-          user_id: string
-        }
-        Insert: {
-          ai_model_id?: string | null
-          created_at?: string | null
-          id?: string
-          tokens_used?: number | null
-          user_id: string
-        }
-        Update: {
-          ai_model_id?: string | null
-          created_at?: string | null
-          id?: string
-          tokens_used?: number | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "usage_logs_ai_model_id_fkey"
-            columns: ["ai_model_id"]
-            isOneToOne: false
-            referencedRelation: "ai_models"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "usage_logs_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"

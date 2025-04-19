@@ -19,8 +19,24 @@ const ProfileOverviewPopup: React.FC<ProfileOverviewPopupProps> = ({
   onOpenChange,
 }) => {
   const navigate = useNavigate();
-  const { profile, getDisplayName, getAvatarInitial } = useUserProfile();
-  const { signOut } = useAuth();
+  
+  // Use try-catch to prevent the component from crashing if AuthProvider is not available
+  let profile = null;
+  let getDisplayName = () => "User";
+  let getAvatarInitial = () => "U";
+  let signOut = async () => {};
+  
+  try {
+    const userProfile = useUserProfile();
+    profile = userProfile.profile;
+    getDisplayName = userProfile.getDisplayName;
+    getAvatarInitial = userProfile.getAvatarInitial;
+    
+    const auth = useAuth();
+    signOut = auth.signOut;
+  } catch (error) {
+    console.error("Auth context or profile hook not available:", error);
+  }
   
   const handleViewProfile = () => {
     onOpenChange(false);
