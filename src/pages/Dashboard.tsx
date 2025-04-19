@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import FadeIn from "@/components/animations/FadeIn";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ProfileOverviewPopup from "@/components/profile/ProfileOverviewPopup";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 interface UserData {
   name: string;
@@ -18,21 +19,14 @@ interface UserData {
 const Dashboard = () => {
   const { getTasksByStatus, getUpcomingTasks } = useTaskContext();
   const navigate = useNavigate();
-  const [user, setUser] = useState<UserData | null>(null);
   const [showProfilePopup, setShowProfilePopup] = useState(false);
+  const { profile, isLoading, getDisplayName, getAvatarInitial } = useUserProfile();
   
   const todoTasks = getTasksByStatus("todo");
   const inProgressTasks = getTasksByStatus("inprogress");
   const completedTasks = getTasksByStatus("completed");
   const upcomingTasks = getUpcomingTasks(7); // Tasks due in the next 7 days
   
-  useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
-  }, []);
-
   const getCurrentDate = () => {
     const options: Intl.DateTimeFormatOptions = { 
       weekday: 'long', 
@@ -43,8 +37,8 @@ const Dashboard = () => {
     return new Date().toLocaleDateString('en-US', options);
   };
 
-  const handleProfileClick = () => {
-    navigate("/profile-settings");
+  const handleAvatarClick = () => {
+    setShowProfilePopup(true);
   };
 
   return (
@@ -61,16 +55,16 @@ const Dashboard = () => {
           <FadeIn direction="down">
             <button 
               className="flex items-center gap-2"
-              onClick={handleProfileClick}
+              onClick={handleAvatarClick}
             >
-              {user?.name && (
-                <span className="text-sm font-medium text-taskify-darkgrey hidden sm:inline-block">
-                  {user.name.split(' ')[0]}
-                </span>
-              )}
+              <span className="text-sm font-medium text-taskify-darkgrey hidden sm:inline-block">
+                {isLoading ? 'Loading...' : getDisplayName()}
+              </span>
               <Avatar className="h-10 w-10 cursor-pointer border border-white shadow-sm">
-                <AvatarImage src={user?.profilePicture || "https://ui-avatars.com/api/?name=User&background=random"} />
-                <AvatarFallback>U</AvatarFallback>
+                <AvatarImage src={profile?.avatar_url || ""} />
+                <AvatarFallback className="bg-purple-700 text-white font-bold">
+                  {getAvatarInitial()}
+                </AvatarFallback>
               </Avatar>
             </button>
           </FadeIn>

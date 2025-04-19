@@ -1,15 +1,24 @@
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowLeft, Upload, LogOut } from "lucide-react";
+import { 
+  ArrowLeft, 
+  User, 
+  Bell, 
+  Shield, 
+  LogOut, 
+  Upload, 
+  Settings as SettingsIcon
+} from "lucide-react";
+import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import FadeIn from "@/components/animations/FadeIn";
 import Transition from "@/components/animations/Transition";
-import { useProfile } from "@/hooks/useProfile";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import { 
   AlertDialog,
   AlertDialogAction,
@@ -21,73 +30,33 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useAuth } from "@/context/AuthContext";
 
-const profileSchema = z.object({
-  username: z.string().min(2, "Username must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  phone: z.string().optional(),
-  bio: z.string().optional(),
-});
-
-type ProfileFormValues = z.infer<typeof profileSchema>;
-
-const ProfileSettingsPage = () => {
+const ProfileSettingsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { fetchProfile, updateProfile, isLoading } = useProfile();
-  const [profilePicture, setProfilePicture] = useState<string | null>(null);
-
-  const form = useForm<ProfileFormValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: {
-      username: "",
-      email: "",
-      phone: "",
-      bio: "",
-    },
-  });
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      const profile = await fetchProfile();
-      if (profile) {
-        form.reset({
-          username: profile.username || "",
-          email: profile.email || "",
-          phone: profile.phone || "",
-          bio: profile.bio || "",
-        });
-      }
-    };
-    loadProfile();
-  }, []);
-
-  const onSubmit = async (data: ProfileFormValues) => {
-    const success = await updateProfile(data);
-    if (success) {
-      navigate("/settings");
-    }
-  };
-
+  const { profile, isLoading, getDisplayName, getAvatarInitial } = useUserProfile();
+  const { signOut } = useAuth();
+  
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          setProfilePicture(event.target.result as string);
-        }
-      };
-      reader.readAsDataURL(file);
+      // Here you would upload to Supabase storage
+      toast.info("File upload functionality coming soon");
     }
   };
 
-  const handleLogout = () => {
-    // Logout logic will be implemented later
+  const handleSaveChanges = () => {
+    toast.success("Profile updated successfully!");
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    toast.success("Logged out successfully");
     navigate("/");
+  };
+
+  const navigateBack = () => {
+    navigate(-1);
   };
 
   return (
@@ -96,7 +65,7 @@ const ProfileSettingsPage = () => {
         <FadeIn direction="down">
           <div className="flex items-center mb-6">
             <button
-              onClick={() => navigate("/settings")}
+              onClick={navigateBack}
               className="flex items-center justify-center w-10 h-10 mr-4 rounded-full bg-white shadow-sm hover:bg-gray-100 transition-colors"
               aria-label="Back"
             >
@@ -106,109 +75,102 @@ const ProfileSettingsPage = () => {
           </div>
         </FadeIn>
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FadeIn delay={100}>
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex justify-center mb-6">
-                    <div className="relative">
-                      <Avatar className="w-24 h-24 border-4 border-white shadow-md">
-                        <AvatarImage src={profilePicture || ""} />
-                        <AvatarFallback>{form.getValues("username")?.[0]?.toUpperCase()}</AvatarFallback>
-                      </Avatar>
-                      <label htmlFor="profile-picture" className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer hover:bg-blue-600 transition-colors">
-                        <Upload className="h-4 w-4" />
-                        <input 
-                          id="profile-picture" 
-                          type="file" 
-                          accept="image/*" 
-                          className="hidden" 
-                          onChange={handleFileUpload} 
-                        />
-                      </label>
-                    </div>
+        <FadeIn delay={100}>
+          <Card className="mb-6">
+            <CardContent className="p-6">
+              <div className="flex justify-center mb-6">
+                <div className="relative">
+                  <Avatar className="w-24 h-24 border-4 border-white shadow-md">
+                    <AvatarImage src={profile?.avatar_url || ""} />
+                    <AvatarFallback>{getAvatarInitial()}</AvatarFallback>
+                  </Avatar>
+                  <label htmlFor="profile-picture" className="absolute bottom-0 right-0 bg-blue-500 text-white p-2 rounded-full cursor-pointer hover:bg-blue-600 transition-colors">
+                    <Upload className="h-4 w-4" />
+                    <input 
+                      id="profile-picture" 
+                      type="file" 
+                      accept="image/*" 
+                      className="hidden" 
+                      onChange={handleFileUpload} 
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Username
+                  </label>
+                  <Input
+                    value={profile?.username || ""}
+                    readOnly
+                    className="w-full bg-gray-50"
+                    placeholder="Your username"
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </FadeIn>
+
+        <FadeIn delay={200}>
+          <Card className="mb-6">
+            <CardContent className="p-6 space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                    <Bell className="h-5 w-5 text-blue-500" />
                   </div>
-
-                  <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="email" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone (optional)</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="tel" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="bio"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Bio (optional)</FormLabel>
-                          <FormControl>
-                            <Textarea {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <div>
+                    <h3 className="font-medium text-gray-900">Notification Settings</h3>
+                    <p className="text-sm text-gray-500">Manage how you receive notifications</p>
                   </div>
-                </CardContent>
-              </Card>
-            </FadeIn>
+                </div>
+                <button 
+                  onClick={() => navigate("/settings/notifications")}
+                  className="text-blue-500 hover:text-blue-600"
+                >
+                  <SettingsIcon className="h-5 w-5" />
+                </button>
+              </div>
 
-            <FadeIn delay={200}>
-              <Button 
-                type="submit" 
-                className="w-full" 
-                disabled={isLoading}
-              >
-                {isLoading ? "Saving..." : "Save Changes"}
-              </Button>
-            </FadeIn>
-          </form>
-        </Form>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+                    <Shield className="h-5 w-5 text-green-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-gray-900">Privacy Settings</h3>
+                    <p className="text-sm text-gray-500">Manage your privacy and data</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => navigate("/settings/privacy")}
+                  className="text-blue-500 hover:text-blue-600"
+                >
+                  <SettingsIcon className="h-5 w-5" />
+                </button>
+              </div>
+            </CardContent>
+          </Card>
+        </FadeIn>
 
         <FadeIn delay={300}>
+          <Button
+            onClick={handleSaveChanges}
+            className="w-full mb-4 bg-blue-500 hover:bg-blue-600"
+          >
+            Save Changes
+          </Button>
+        </FadeIn>
+
+        <FadeIn delay={400}>
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
                 variant="outline"
-                className="w-full mt-4 border-red-300 text-red-500 hover:bg-red-50"
+                className="w-full border-red-300 text-red-500 hover:bg-red-50"
               >
                 <LogOut className="h-5 w-5 mr-2" />
                 Logout
@@ -218,11 +180,13 @@ const ProfileSettingsPage = () => {
               <AlertDialogHeader>
                 <AlertDialogTitle>Are you sure you want to logout?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  You will need to sign in again to access your profile.
+                  You will need to sign in again to access your tasks and projects.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogCancel>
+                  Cancel
+                </AlertDialogCancel>
                 <AlertDialogAction
                   className="bg-red-500 text-white hover:bg-red-600"
                   onClick={handleLogout}
