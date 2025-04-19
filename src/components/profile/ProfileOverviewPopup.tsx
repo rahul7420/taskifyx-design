@@ -6,7 +6,6 @@ import Button from "@/components/common/Button";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useUserProfile } from "@/hooks/useUserProfile";
-import { useAuth } from "@/context/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface ProfileOverviewPopupProps {
@@ -19,17 +18,16 @@ const ProfileOverviewPopup: React.FC<ProfileOverviewPopupProps> = ({
   onOpenChange,
 }) => {
   const navigate = useNavigate();
-  const { profile, getDisplayName, getAvatarInitial } = useUserProfile();
-  const { signOut } = useAuth();
-  
+  const { profile, getFullName, getAvatarCharacter, getAvatarUrl } = useUserProfile();
+
   const handleViewProfile = () => {
     onOpenChange(false);
     navigate("/profile-settings");
     toast.info("Navigating to profile settings");
   };
 
-  const handleLogout = async () => {
-    await signOut();
+  const handleLogout = () => {
+    localStorage.removeItem("user");
     toast.success("Logged out successfully");
     navigate("/");
   };
@@ -45,14 +43,17 @@ const ProfileOverviewPopup: React.FC<ProfileOverviewPopupProps> = ({
         </button>
 
         <div className="mt-8 flex flex-col items-center gap-4">
-          <Avatar className="w-[90px] h-[90px] border-2 border-white shadow-md">
-            <AvatarImage src={profile?.avatar_url || ""} />
+          <Avatar className="w-[90px] h-[90px] border-4 border-white shadow-md bg-purple-700">
+            {getAvatarUrl() ? (
+              <AvatarImage src={getAvatarUrl() || ""} alt="Profile" className="object-cover" />
+            ) : null}
             <AvatarFallback className="bg-purple-700 text-white text-3xl font-bold">
-              {getAvatarInitial()}
+              {getAvatarCharacter()}
             </AvatarFallback>
           </Avatar>
 
-          <h2 className="text-xl font-bold">{getDisplayName()}</h2>
+          <h2 className="text-xl font-bold">{getFullName()}</h2>
+          <p className="text-[#9E9E9E] text-sm">{profile?.bio || "No bio yet"}</p>
         </div>
 
         <div className="mt-auto w-full space-y-4">
