@@ -11,23 +11,7 @@ export interface UserProfile {
 }
 
 export const useUserProfile = () => {
-  // Check if AuthProvider is available
-  let authContext;
-  try {
-    authContext = useAuth();
-  } catch (error) {
-    console.error("Auth context not available:", error);
-    // Return default values when AuthProvider is not available
-    return {
-      profile: null,
-      isLoading: false,
-      error: "Auth provider not available",
-      getDisplayName: () => 'User',
-      getAvatarInitial: () => 'U'
-    };
-  }
-  
-  const { user } = authContext;
+  const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
